@@ -1,6 +1,7 @@
+import { InferGetStaticPropsType } from 'next';
+
 import Layout from '../components/layout';
 import Accounts from '../components/accounts';
-import { InferGetStaticPropsType } from 'next';
 
 export async function getStaticProps() {
   const { urls } = await import('../data/config.json');
@@ -17,13 +18,13 @@ export default function About({
       title="About"
       description="I'm Andrew Li, a higher school programmer and saxophonist from Omaha, Nebraska.">
       <main>
-        <img src="/profile.png" />
+        <img alt="Portrait" src="/profile.png" />
         <div>
           <p>
             I'm <b>Andrew Li</b>, high school senior from Omaha, Nebraska. I'm
             currently at the University of Nebraska Omaha doing{' '}
-            <b>research in mathematics</b> into Diophantine equations in
-            algebraic number fields, and previously an <b>intern</b> at UNO's
+            <b>research in mathematics</b> into nonlinear Diophantine equations
+            in algebraic number fields, and previously an <b>intern</b> at UNO's
             Cybersecurity Lab developing web apps to combat phishing.
           </p>
           <p>
@@ -45,7 +46,7 @@ export default function About({
         img {
           width: 100%;
           border-radius: 5px;
-          padding: 20px 0;
+          margin: 0 0 20px;
         }
       `}</style>
     </Layout>

@@ -31,16 +31,27 @@ export default function Layout({ children, title, description }: LayoutProps) {
       <Footer />
       <style jsx>{`
         .container {
-          margin: 0 30%;
           display: flex;
           flex-direction: column;
           align-items: stretch;
-          height: 100%;
+          width: 700px;
+        }
+
+        @media (max-width: 800px) {
+          .container {
+            margin: 0 50px;
+          }
         }
       `}</style>
       <style jsx global>{`
         html {
           overflow: hidden scroll;
+        }
+
+        @media (max-width: 400px) {
+          html {
+            font-size: 12px;
+          }
         }
 
         html,
@@ -74,7 +85,9 @@ export default function Layout({ children, title, description }: LayoutProps) {
         }
 
         #__next {
-          height: 100%;
+          min-height: 100%;
+          display: flex;
+          justify-content: center;
         }
       `}</style>
     </div>

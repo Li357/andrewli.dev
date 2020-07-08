@@ -29,13 +29,13 @@ export default function Navbar() {
         }
 
         .links a {
-          padding: 20px;
+          margin: 20px;
           color: gray;
           font-size: 1.2em;
         }
 
         .links a:last-child {
-          padding-right: 0;
+          margin-right: 0;
         }
 
         .links a:hover {
