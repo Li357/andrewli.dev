@@ -9,6 +9,7 @@
     "deploy": "rm -rf out && yarn build && next export && cp CNAME out/CNAME && touch out/.nojekyll && gh-pages -t -d out"
   },
   "dependencies": {
+    "katex": "^0.11.1",
     "next": "9.4.4",
     "react": "16.13.1",
     "react-dom": "16.13.1",

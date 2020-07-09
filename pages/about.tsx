@@ -18,7 +18,7 @@ export default function About({
       title="About"
       description="I'm Andrew Li, a higher school programmer and saxophonist from Omaha, Nebraska.">
       <main>
-        <img alt="Portrait" src="/profile.png" />
+        <img alt="Portrait" src="/profile.jpg" width="700" height="450" />
         <div>
           <p>
             I'm <b>Andrew Li</b>, high school senior from Omaha, Nebraska. I'm
@@ -45,6 +45,7 @@ export default function About({
 
         img {
           width: 100%;
+          height: auto;
           border-radius: 5px;
           margin: 0 0 20px;
         }

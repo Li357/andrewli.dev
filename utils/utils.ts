@@ -8,3 +8,13 @@ export function getBlogPathFromFile(filePath: string) {
   const slug = fileName.slice(0, -3);
   return `/blog/${slug}`;
 }
+
+export function formatDate(dateString: string) {
+  console.log(dateString);
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}

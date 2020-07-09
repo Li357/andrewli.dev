@@ -32,6 +32,7 @@ export default function Blog({
   return (
     <Layout title="Blog" description="TODO">
       <main>
+        <h1>Posts</h1>
         {posts.map((post) => (
           <PostCard key={post.data.title} {...post} />
         ))}

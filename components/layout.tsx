@@ -16,7 +16,11 @@ export default function Layout({ children, title, description }: LayoutProps) {
       <Head>
         <link rel="icon" href="/favicon.ico" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap"
+          rel="stylesheet"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400&display=swap"
           rel="stylesheet"
         />
         <title>
@@ -65,19 +69,26 @@ export default function Layout({ children, title, description }: LayoutProps) {
           font-weight: 700;
         }
 
-        a {
-          text-decoration: none;
+        a,
+        p {
+          font-size: 1.2rem;
         }
 
         a,
         a:visited {
-          color: #38c7c5;
+          text-decoration: none;
+          color: #41aade;
         }
 
         p {
           font-weight: 400;
-          font-size: 1.2rem;
           line-height: 1.8rem;
+          font-family: Source Sans Pro;
+        }
+
+        h1,
+        h3 {
+          margin: 0;
         }
 
         * {

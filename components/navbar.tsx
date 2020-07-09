@@ -34,7 +34,6 @@ export default function Navbar() {
         .links a {
           margin: 20px;
           color: gray;
-          font-size: 1.2em;
         }
 
         .links a:last-child {
