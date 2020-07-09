@@ -10,7 +10,6 @@ export function getBlogPathFromFile(filePath: string) {
 }
 
 export function formatDate(dateString: string) {
-  console.log(dateString);
   const date = new Date(dateString);
   return date.toLocaleDateString('en', {
     year: 'numeric',
