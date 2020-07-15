@@ -43,7 +43,7 @@ export default function Layout({ children, title, description }: LayoutProps) {
 
         @media (max-width: 800px) {
           .container {
-            margin: 0 50px;
+            margin: 0 20px;
           }
         }
       `}</style>
@@ -83,7 +83,9 @@ export default function Layout({ children, title, description }: LayoutProps) {
         p {
           font-weight: 400;
           line-height: 1.8rem;
-          font-family: Source Sans Pro;
+          font-family: Source Sans Pro, -apple-system, BlinkMacSystemFont,
+            Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans,
+            Helvetica Neue, sans-serif;
         }
 
         h1,

@@ -1,75 +1,73 @@
 import Head from 'next/head';
-import glob from 'glob';
-import matter from 'gray-matter';
 import { InferGetStaticPropsType } from 'next';
+import { useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import renderMathInElement from 'katex/dist/contrib/auto-render';
 
 import Layout from '../../components/layout';
-import { PostData } from '../../utils/types';
-import { getBlogPathFromFile, formatDate } from '../../utils/utils';
-import { useRef, useEffect } from 'react';
+import { formatDate } from '../../utils/utils';
+import getPosts from '../../utils/get-posts';
 
 export const getStaticPaths = async () => {
-  const postPaths = glob.sync('posts/**/*.md');
-  const paths = postPaths.map((path) => getBlogPathFromFile(path));
-  return { paths, fallback: false };
+  return {
+    paths: getPosts().map((post) => `/blog/${post.slug}`),
+    fallback: false,
+  };
 };
 
 export const getStaticProps = async ({ params }) => {
-  const { slug } = params;
-  const { default: raw } = await import(`../../posts/${slug}.md`);
-  const post = matter(raw);
   return {
-    props: {
-      data: post.data as PostData,
-      content: post.content,
-    },
+    props: getPosts().find((post) => post.slug === params.slug),
   };
 };
 
 export default function BlogPost({
-  data,
+  title,
+  date,
   content,
+  math,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   const postContainer = useRef(null);
 
   useEffect(() => {
-    if (data.math && postContainer.current) {
-      renderMathInElement(postContainer.current, {
-        delimiters: [
-          { left: '$$', right: '$$', display: true },
-          { left: '$', right: '$', display: false },
-        ],
-        macros: {
-          '\\qed': '\\blacksquare',
-        },
-      });
+    if (postContainer.current) {
+      if (math) {
+        renderMathInElement(postContainer.current, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false },
+          ],
+          macros: {
+            '\\qed': '\\blacksquare',
+          },
+        });
+      }
       postContainer.current.style.display = 'flex';
     }
   }, [postContainer]);
 
   return (
-    <Layout title={data.title} description="TODO">
+    <Layout title={title} description="TODO">
       <Head>
-        <link
-          rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css"
-          integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq"
-          crossOrigin="anonymous"
-        />
+        {math && (
+          <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css"
+            integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq"
+            crossOrigin="anonymous"
+          />
+        )}
       </Head>
       <main>
-        <h3>{formatDate(data.date)}</h3>
-        <h1>{data.title}</h1>
+        <h3>{formatDate(date)}</h3>
+        <h1>{title}</h1>
         <div className="body" ref={postContainer}>
-          <ReactMarkdown source={content} />
+          <ReactMarkdown source={`${content} ■`} />
         </div>
       </main>
       <style jsx>{`
         .body {
           display: none;
-          font-family: 'Source Sans Pro';
           flex-direction: column;
         }
       `}</style>

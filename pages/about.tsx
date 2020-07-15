@@ -40,7 +40,7 @@ export default function About({
           flex: 1;
           display: flex;
           flex-direction: column;
-          justify-content: center;
+          justify-content: flex-start;
         }
 
         img {

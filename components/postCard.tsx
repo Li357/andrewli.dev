@@ -1,20 +1,15 @@
 import Link from 'next/link';
 
-import { PostData } from '../utils/types';
+import { Post } from '../utils/types';
 import { formatDate } from '../utils/utils';
 
-interface PostCardProps {
-  data: PostData;
-  path: string;
-}
-
-export default function PostCard({ data, path }: PostCardProps) {
+export default function PostCard({ title, slug, date }: Post) {
   return (
     <div className="post-card">
-      <Link href={path}>
-        <a>{data.title}</a>
+      <Link href={`/blog/${slug}`}>
+        <a>{title}</a>
       </Link>
-      <span>{formatDate(data.date)}</span>
+      <span>{formatDate(date)}</span>
       <style jsx>{`
         .post-card {
           display: flex;
