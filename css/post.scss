@@ -1,0 +1,16 @@
+---
+---
+
+.content {
+  & .header {
+    margin-bottom: calc(2 * var(--margin-vertical));
+
+    & h1 {
+      margin: 0;
+    }
+  }
+
+  & .qed {
+    margin: 0 auto;
+  }
+}

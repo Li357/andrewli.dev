@@ -1,0 +1,28 @@
+---
+layout: default
+style: css/index.css
+---
+
+<div class="name">
+  {% svg /assets/images/name.svg %}
+  <h2>STUDENT / DEVELOPER</h2>
+</div>
+<hr class="center">
+<h2>Latest Posts</h2>
+{% for post in site.posts %}
+  <div class="post">
+    <h3><a href="{{ post.url }}">{{ post.title }}</a></h3>
+    <span class="subtitle">{{ post.date | date: "%b %Y" }}</span>
+  </div>
+{% endfor %}
+
+<script>
+  const paths = document.querySelectorAll('.name path');
+  paths.forEach((path, i) => {
+    setTimeout(() => {
+      path.style.strokeDasharray = String(path.getTotalLength());
+      path.style.strokeDashoffset = String(path.getTotalLength());
+      path.style.display = 'block';
+    }, 150 * i);
+  });
+</script>

@@ -1,0 +1,19 @@
+---
+---
+
+.profiles {
+  margin: 10px 0;
+  height: 25px;
+
+  & a {
+    margin-right: 10px;
+
+    &:last-child {
+      margin-right: 0;
+    }
+
+    & svg {
+      height: 100%;
+    }
+  }
+}

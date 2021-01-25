@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="icon" href="{{ '/assets/images/favicon.ico' | relative_url }}" />
+    <title>
+      {{ site.title }}{% if page.title %} | {{ page.title }} {% endif %}
+    </title>
+    <meta name="description" content="{{ page.description }}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="{{ '/css/default.css' | relative_url }}" />
+    {% if page.style %}
+      <link rel="stylesheet" href="{{ page.style | relative_url }}" />
+    {% elsif layout.style %}
+      <link rel="stylesheet" href="{{ layout.style | relative_url }}" />
+    {% endif %}
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BPPP33YGCV"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-BPPP33YGCV');
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <nav class="nav">
+        <a href="/" class="nav__home">{% svg /assets/images/logo.svg %}</a>
+        <div class="nav__links">
+          <span class="theme-toggler">
+            <div class="indicator"></div>
+          </span>
+          <a href="/about">ABOUT</a>
+        </div>
+      </nav>
+      <main class="content">{{ content }}</main>
+      <footer></footer>
+    </div>
+    <script>
+      const toggler = document.querySelector('.theme-toggler');
+      const currTheme = localStorage.getItem('theme');
+
+      function setTheme(theme) {
+        document.documentElement.dataset.theme = theme;
+        toggler.querySelector('.indicator').innerText = theme === 'dark' ? 'D' : 'L';
+      }
+
+      if (currTheme) {
+        setTheme(currTheme);
+      } else {
+        const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
+        setTheme(systemDark.matches ? 'dark' : 'light');
+      }
+
+      toggler.addEventListener('click', () => {
+        const newTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+        setTheme(newTheme);
+        localStorage.setItem('theme', newTheme);
+      });
+    </script>
+  </body>
+</html>

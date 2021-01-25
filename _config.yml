@@ -1,0 +1,54 @@
+timezone: America/Chicago
+permalink: /blog/:slug
+
+title: Andrew Li
+description: >-
+  Write an awesome description for your new site here. You can edit this
+  line in _config.yml. It will appear in your document head meta (for
+  Google search results) and in your feed.xml site description.
+baseurl: ''
+url: 'https://andrewli.dev'
+
+profiles:
+  - logo: assets/images/github.svg
+    link: https://github.com/Li357
+  - logo: assets/images/linkedin.svg
+    link: https://www.linkedin.com/in/andrew-li-622261180
+  - logo: assets/images/so.svg
+    link: https://stackoverflow.com/users/5647260/andrew-li
+
+plugins:
+  - jekyll-inline-svg
+  - jekyll-feed
+
+sass:
+  sass_dir: _scss
+  style: compact
+
+svg:
+  optimize: true
+
+defaults:
+  - scope:
+      path: 'assets/images'
+    values:
+      image: true
+# Exclude from processing.
+# The following items will not be processed, by default.
+# Any item listed under the `exclude:` key here will be automatically added to
+# the internal "default list".
+#
+# Excluded items can be processed by explicitly listing the directories or
+# their entries' file path in the `include:` list.
+#
+# exclude:
+#   - .sass-cache/
+#   - .jekyll-cache/
+#   - gemfiles/
+#   - Gemfile
+#   - Gemfile.lock
+#   - node_modules/
+#   - vendor/bundle/
+#   - vendor/cache/
+#   - vendor/gems/
+#   - vendor/ruby/

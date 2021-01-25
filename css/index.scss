@@ -1,0 +1,45 @@
+---
+---
+
+.name {
+  margin-top: 10rem;
+
+  & svg path {
+    animation: 2s ease-in-out forwards writeIn;
+    stroke-width: 0.75;
+    stroke-linecap: round;
+    stroke: var(--color-foreground);
+    fill: var(--color-foreground);
+    fill-opacity: 0;
+    display: none;
+  }
+
+  & h2 {
+    margin: 0;
+  }
+}
+
+@keyframes writeIn {
+  to {
+    stroke-dashoffset: 0;
+    fill-opacity: 1;
+  }
+}
+
+.post {
+  padding: 10px 0;
+
+  & h3 {
+    margin: 5px 0;
+
+    & a {
+      font-weight: bold;
+      color: var(--color-foreground);
+      transition: var(--transition-ease);
+
+      &:hover {
+        color: var(--color-active);
+      }
+    }
+  }
+}
