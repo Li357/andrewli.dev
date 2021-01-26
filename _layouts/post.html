@@ -13,3 +13,33 @@ style: css/post.css
 </div>
 {{ content }}
 <div class="qed">■</div>
+
+<div id="footnote-toast"></div>
+<script>
+  let currTimeout;
+  const toast = document.getElementById('footnote-toast');
+  const footnoteLinks = document.querySelectorAll('.footnote');
+
+  footnoteLinks.forEach((footnoteLink) => {
+    footnoteLink.addEventListener('mouseenter', () => {
+      const href = footnoteLink.getAttribute('href');
+      const footnoteContent = document.getElementById(href.slice(1)).querySelector('p');
+      const clonedContent = footnoteContent.cloneNode(true);
+      clonedContent.removeChild(clonedContent.querySelector('a.reversefootnote'));
+
+      toast.innerHTML = clonedContent.innerHTML;
+      if (currTimeout) {
+        clearTimeout(currTimeout);
+      }
+      toast.classList.add('active');
+    });
+
+    footnoteLink.addEventListener('mouseleave', () => {
+      currTimeout = setTimeout(() => {
+        toast.classList.remove('active');
+      }, 2000);
+    });
+  });
+
+  
+</script>

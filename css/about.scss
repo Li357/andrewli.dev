@@ -1,6 +1,10 @@
 ---
 ---
 
+html[data-theme='dark'] .content img {
+  border: 2px solid var(--color-foreground);
+}
+
 .profiles {
   margin: 10px 0;
   height: 25px;
@@ -14,6 +18,10 @@
 
     & svg {
       height: 100%;
+
+      & > path {
+        fill: var(--color-foreground);
+      }
     }
   }
 }

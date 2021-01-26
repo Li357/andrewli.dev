@@ -46,6 +46,7 @@ html {
   color: var(--color-foreground);
 
   --transition-ease: all 0.2s ease;
+  --transition-ease-fast: all 0.15s ease;
   --border-radius: 5px;
   --margin-vertical: 10px;
 }
@@ -79,11 +80,15 @@ img {
 
 blockquote {
   margin: var(--margin-vertical) 0;
-  padding: 20px;
-  padding-left: 0;
-  border-left: 5px solid var(--color-inactive);
   background-color: var(--color-blockquote);
   border-radius: var(--border-radius);
+
+  --blockquote-padding: 20px;
+  --blockquote-border-width: 5px;
+
+  padding: var(--blockquote-padding);
+  padding-left: calc(var(--blockquote-padding) - var(--blockquote-border-width));
+  border-left: var(--blockquote-border-width) solid var(--color-inactive);
 }
 
 span.subtitle {

@@ -4,7 +4,7 @@ title: Hello world!
 date: 2021-01-23
 ---
 
-Legendary mathematician [Terrance Tao](https://en.wikipedia.org/wiki/Terence_Tao) outlines three stages of mathematics education in his post [There’s more to mathematics than rigour and proofs](https://terrytao.wordpress.com/career-advice/theres-more-to-mathematics-than-rigour-and-proofs/):
+Mathematician [Terrance Tao](https://en.wikipedia.org/wiki/Terence_Tao) outlines three stages of mathematics education in his post [There’s more to mathematics than rigour and proofs](https://terrytao.wordpress.com/career-advice/theres-more-to-mathematics-than-rigour-and-proofs/):
 
 > 1. The “pre-rigorous” stage, in which mathematics is taught in an informal, intuitive manner, based on examples, fuzzy notions, and hand-waving. (For instance, calculus is usually first introduced in terms of slopes, areas, rates of change, and so forth.) The emphasis is more on computation than on theory. This stage generally lasts until the early undergraduate years.
 > 2. The “rigorous” stage, in which one is now taught that in order to do maths “properly”, one needs to work and think in a much more precise and formal manner (e.g. re-doing calculus by using epsilons and deltas all over the place). The emphasis is now primarily on theory; and one is expected to be able to comfortably manipulate abstract mathematical objects without focusing too much on what such objects actually “mean”. This stage usually occupies the later undergraduate and early graduate years.
