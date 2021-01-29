@@ -3,12 +3,29 @@ permalink: /blog/:slug
 
 title: Andrew Li
 description: >-
-  Write an awesome description for your new site here. You can edit this
-  line in _config.yml. It will appear in your document head meta (for
-  Google search results) and in your feed.xml site description.
+  I'm a student, developer, and jazz musician from Omaha. I also blog about math 
+  and computer science, with an emphasis on intuition.
+author:
+  name: Andrew Li
+  twitter: li_357
+  image: /assets/images/andrewli.jpg
+twitter:
+  username: li_357
+  card: summary_large_image
+tagline: Student, developer, and musician.
 baseurl: ''
 url: 'https://andrewli.dev'
 
+# for jekyll-seo-tag
+social:
+  name: Andrew Li
+  links:
+    - https://twitter.com/li_357
+    - https://www.linkedin.com/in/andrew-li-622261180
+    - https://github.com/Li357
+    - https://stackoverflow.com/users/5647260/andrew-li
+
+# for site use
 profiles:
   - logo: assets/images/github.svg
     link: https://github.com/Li357
@@ -19,7 +36,7 @@ profiles:
 
 plugins:
   - jekyll-inline-svg
-  - jekyll-feed
+  - jekyll-seo-tag
 
 sass:
   sass_dir: _scss

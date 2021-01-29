@@ -25,7 +25,7 @@
 
   & #footnote-toast {
     position: fixed;
-    padding: var(--margin-vertical);
+    padding: calc(2 * var(--margin-vertical));
     opacity: 0;
     bottom: 0;
     right: 100px;

@@ -3,6 +3,7 @@ layout: default
 title: About
 permalink: /about/
 style: css/about.css
+description: I'm Andrew Li, high school senior from Omaha, Nebraska. Currently a student and number theory TA at the University of Nebraska-Omaha.
 ---
 
 ![Portrait](/assets/images/portrait.jpg)

@@ -17,6 +17,7 @@ style: css/post.css
 <div id="footnote-toast"></div>
 <script>
   let currTimeout;
+  const timeout = 2000;
   const toast = document.getElementById('footnote-toast');
   const footnoteLinks = document.querySelectorAll('.footnote');
 
@@ -28,18 +29,24 @@ style: css/post.css
       clonedContent.removeChild(clonedContent.querySelector('a.reversefootnote'));
 
       toast.innerHTML = clonedContent.innerHTML;
-      if (currTimeout) {
-        clearTimeout(currTimeout);
-      }
+      clearTimeout(currTimeout);
       toast.classList.add('active');
     });
 
     footnoteLink.addEventListener('mouseleave', () => {
       currTimeout = setTimeout(() => {
         toast.classList.remove('active');
-      }, 2000);
+      }, timeout);
     });
   });
 
-  
+  toast.addEventListener('mouseenter', () => {
+    clearTimeout(currTimeout);
+  });
+
+  toast.addEventListener('mouseleave', () => {
+    currTimeout = setTimeout(() => {
+      toast.classList.remove('active');
+    }, timeout);
+  });
 </script>
