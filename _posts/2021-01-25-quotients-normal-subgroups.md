@@ -123,13 +123,13 @@ Given that $g \ker f$ is all the elements that *are* $g$ under $f$, they should 
 
 ![The First Isomorphism Theorem Visualized](/assets/2021-01-25-quotients-normal-subgroups/fit.png)
 
-Notice how $G/\ker f$ splits $G$ into clumps of elements that are all the same under $f$. Accordingly, these clumps all map to the same element in $\bar{G}$. Doesn't it seem natural that there would be a one-to-one correspondence, and specifically in the context of groups, an isomorphism between the clumps on the left, and where they map to on the right? That's exactly the First Isomorphism Theorem! It states that,
+Notice how $G/\ker f$ splits $G$ into clumps of elements that are all the same under $f$. Accordingly, these clumps all map to the same element in $\bar{G}$. Doesn't it seem natural that there would be a one-to-one correspondence, and specifically in the context of groups, an isomorphism, between the clumps of colored circles on the left and where they map to colored squares on the right? That's exactly the First Isomorphism Theorem! It states that,
 
 > **THEOREM.** Let $G$ and $\bar{G}$ be groups and $f : G \rightarrow \bar{G}$ be a homomorphism between them. Then
 > $$G / \ker f \cong f(G),$$
 > where $f(G) = \{f(g) : g \in G\}$ is the image of $f$ under $G$. Explicitly, the isomorphism is given by the map $g\ker f \mapsto f(g)$.
 
-Further, notice that because $f$ is a homomorphism, that all of $\bar{G}$ need not be hit, or in other words, we could have $f(G) \neq \bar{G}$. In our picture, there are potentially black squares that are not mapped to, but those don't concern the First Isomorphism Theorem. All it says is that $G/\ker f$ is isomorphic onto the image of $f$ under $G$, and that should feel natural!
+Further, notice that because $f$ is a homomorphism, that all of $\bar{G}$ need not be hit, or in other words, we could have $f(G) \neq \bar{G}$. In our picture, there are potentially black squares that are not mapped to, but those don't concern the First Isomorphism Theorem. All it says is that $G/\ker f$ is isomorphic onto the image (all the colored squares) of $f$ under $G$, and that should feel natural!
 
 For the sake of concreteness, let's apply the First Isomorphism Theorem to an example. Consider the homomorphism $f(x) = x \bmod 4$ from $\mathbb Z$ to $\mathbb Z_4$. Then $\ker f$ are all the multiplies of $4$, since they are equivalent to $0 \bmod 4$. Now consider the quotient group $\mathbb Z/\ker f = \mathbb Z/4\mathbb Z$. There are only four cosets in this quotient group, namely $0 + 4\mathbb Z, 1+4\mathbb Z, 2+4\mathbb Z$, and $3 + 4\mathbb Z$ since it is cyclic. And of course, by the First Isomorphism Theorem, we know
 $$\mathbb Z/4\mathbb Z \cong f(\mathbb Z) = \mathbb Z_4$$
