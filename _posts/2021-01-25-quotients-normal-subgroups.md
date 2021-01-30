@@ -17,12 +17,23 @@ After learning about Lagrange's theorem and how subgroups partition groups into 
 ![Z4 and its cosets](/assets/2021-01-25-quotients-normal-subgroups/z4.png)
 
 If you squint, you might see something that resembles the Cayley table of $\mathbb Z_2$, where instead of the integers $0$ and $1$ we have the cosets $0 + H = H$ and $1 + H$. And just based off the clumped Cayley table, there's a sensible operation $*$ to "combine" these cosets to give another coset:
+<p class="big">
 $$
 \begin{aligned}
 (a+H) * (b+H) &= \{x + y : x \in a+H, y \in b+H\} \\
-&= (a+b) + H
+&= (a+b) + H.
 \end{aligned}
 $$
+</p>
+<p class="small">
+$$
+\begin{aligned}
+&\phantom{=} (a+H) * (b+H) \\
+&= \{x + y : x \in a+H, y \in b+H\} \\
+&= (a+b) + H.
+\end{aligned}
+$$
+</p>
 For instance, $H * (1+H) = \{0 + 1, 0 + 3, 2 + 1, 2 + 3\} = \{1, 3\} = 1+H$. And it even seems to work when we choose a different coset representative $2 + H = H$, since $(2+H) * (1+H) = 1+H$ as well. It's a great exercise to verify this works for any combination of $H$ and $1+H$, and with different coset representatives. So now we've got a set of two elements, $\{H, 1+H\}$ that has a closed operation. It <a class="footnote" href="#fn:almost">looks like a group and smells like one</a>[^almost], one smaller than the group $\mathbb Z_4$ of four elements we started with! 
 
 Daringly, you might try this process on a nonabelian group, with the subgroup $H = \{(), (123), (132)\}$ of $S_3$ and its coset $(12)H = \{(12), (23), (13)\}$. Again, something resembling $\mathbb Z_2$ seems to appear:
@@ -30,23 +41,45 @@ Daringly, you might try this process on a nonabelian group, with the subgroup $H
 ![S3 with cosets of A3](/assets/2021-01-25-quotients-normal-subgroups/s3a3.png)
 
 Similarly, we can combine these cosets <a class="footnote" href="#fn:notation">with $*$ to produce another coset</a>[^notation]:
+<p class="big">
 $$
 \begin{aligned}
 aH * bH &= \{xy : x \in aH, y \in bH\} \\
-&= abH
+&= abH.
 \end{aligned}
 $$
+</p>
+<p class="small">
+$$
+\begin{aligned}
+&\phantom{=} aH * bH \\
+&= \{xy : x \in aH, y \in bH\} \\
+&= abH.
+\end{aligned}
+$$
+</p>
 So again the set $\{H, (12)H\}$ is equipped with a closed operation $*$, <a class="footnote" href="#fn:almost2">making it a very convincing group</a>[^almost2] and three times smaller than our original $S_3$! You might start to wonder if this process works for all groups. That's until you try a second nonabelian example for good measure, with $H = \{(), (12)\}$ of $S_3$ and its cosets $(123)H = \{(123), (13)\}$ and $(132)H = \{(132), (23)\}$:
 
 ![S3 without clumping](/assets/2021-01-25-quotients-normal-subgroups/s3bad.png)
 
 This time, the cosets didn't form tidy clumps! In particular, if we take $H$ and try to combine it with $(123)H$, we find that
+<p class="big">
 $$
 \begin{aligned}
 H * (123)H &= \{xy : x \in H, y \in (123)H\} \\
-&= \{(123), (13), (23), (132)\}
+&= \{(123), (13), (23), (132)\}.
 \end{aligned}
 $$
+</p>
+<p class="small">
+$$
+\begin{aligned}
+&\phantom{=} H * (123)H \\
+&= \{xy : x \in H, y \in (123)H\} \\
+&= \{(123), (13), (23), (132)\}.
+\end{aligned}
+$$
+</p>
 But $\{(123), (13), (23), (132)\}$ is not a coset itself, much less equal to $(123)H$! Sadly, with this particular subgroup $H = \{(), (12)\}$, the general rule $aH * bH = abH$ breaks. The next question then becomes: what made the first two subgroups special?
 
 ## Building Intuition

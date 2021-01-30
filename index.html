@@ -4,7 +4,10 @@ style: css/index.css
 ---
 
 <div class="name">
-  {% svg /assets/images/name.svg %}
+  <noscript>
+    {% svg /assets/images/name.svg %}
+  </noscript>
+  {% svg /assets/images/name.svg class="animated" %}
   <h2>STUDENT / DEVELOPER</h2>
 </div>
 <hr class="center">
@@ -17,7 +20,9 @@ style: css/index.css
 {% endfor %}
 
 <script>
-  const paths = document.querySelectorAll('.name path');
+  const nameSVG = document.querySelector('.name > svg.animated');
+  nameSVG.style.display = 'block';
+  const paths = nameSVG.querySelectorAll('path');
   paths.forEach((path, i) => {
     setTimeout(() => {
       path.style.strokeDasharray = String(path.getTotalLength());
