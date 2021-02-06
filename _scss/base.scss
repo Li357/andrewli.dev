@@ -9,6 +9,7 @@
   --color-inactive: #a3a3a3;
   --color-separator: #eaeaea;
   --color-blockquote: rgba(0, 0, 0, 0.05);
+  --color-inline-code: rgba(0, 0, 0, 0.1);
 }
 
 @mixin theme-dark {
@@ -18,6 +19,7 @@
   --color-inactive: #dbdbdb;
   --color-separator: #eaeaea;
   --color-blockquote: rgba(255, 255, 255, 0.15);
+  --color-inline-code: rgba(255, 255, 255, 0.2);
 }
 
 html,
@@ -49,6 +51,8 @@ html {
   --transition-ease-fast: all 0.15s ease;
   --border-radius: 5px;
   --margin-vertical: 10px;
+  --inset-padding: 20px;
+  --highlight-border: 2px solid var(--color-foreground);
 }
 
 html,
@@ -84,14 +88,31 @@ blockquote {
   background-color: var(--color-blockquote);
   border-radius: var(--border-radius);
 
-  --blockquote-padding: 20px;
   --blockquote-border-width: 5px;
 
-  padding: var(--blockquote-padding);
-  padding-left: calc(var(--blockquote-padding) - var(--blockquote-border-width));
+  padding: var(--inset-padding);
+  padding-left: calc(var(--inset-padding) - var(--blockquote-border-width));
   border-left: var(--blockquote-border-width) solid var(--color-inactive);
 }
 
 span.subtitle {
   color: var(--color-inactive);
+}
+
+pre {
+  border-radius: var(--border-radius);
+  padding: var(--inset-padding);
+  white-space: pre;
+  overflow-x: auto;
+  word-break: break-all;
+  margin: var(--margin-vertical) 0;
+}
+
+code.language-plaintext {
+  padding: 0.25em;
+  background-color: var(--color-inline-code);
+}
+
+pre code {
+  color: white; /* since code blocks are always dark */
 }

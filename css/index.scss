@@ -51,4 +51,22 @@
       }
     }
   }
+
+  & .subtitle {
+    display: flex;
+    align-items: center;
+
+    & .tag {
+      border-radius: 50px; /* something big */
+      background-color: var(--color-inactive);
+      color: var(--color-background);
+      padding: 0 7.5px;
+      font-size: 0.75rem;
+      margin: 2.5px;
+
+      &:first-child {
+        margin-left: 10px;
+      }
+    }
+  }
 }

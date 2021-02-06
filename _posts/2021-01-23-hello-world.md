@@ -1,7 +1,6 @@
 ---
 layout: post
 title: Hello world!
-date: 2021-01-23
 ---
 
 Mathematician [Terrance Tao](https://en.wikipedia.org/wiki/Terence_Tao) outlines three stages of mathematics education in his post [There’s more to mathematics than rigour and proofs](https://terrytao.wordpress.com/career-advice/theres-more-to-mathematics-than-rigour-and-proofs/):

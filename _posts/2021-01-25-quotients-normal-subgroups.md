@@ -1,9 +1,9 @@
 ---
 layout: post
 title: 'Understanding quotient groups and normal subgroups, intuitively'
-date: 2021-01-25
 math: true
 image: '/assets/2021-01-25-quotients-normal-subgroups/z4.png'
+tags: abstract-algebra
 ---
 
 {% katexmm %}

@@ -2,6 +2,7 @@
 layout: post
 title: 'The other isomorphism theorems'
 math: true
+tags: abstract-algebra
 ---
 
 {% katexmm %}
