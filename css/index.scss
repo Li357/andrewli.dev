@@ -58,7 +58,6 @@
 
     & .tag {
       border-radius: 50px; /* something big */
-      background-color: var(--color-inactive);
       color: var(--color-background);
       padding: 0 7.5px;
       font-size: 0.75rem;
@@ -66,6 +65,14 @@
 
       &:first-child {
         margin-left: 10px;
+      }
+
+      &.math {
+        background-color: var(--color-tag-math);
+      }
+
+      &.cs {
+        background-color: var(--color-tag-cs);
       }
     }
   }

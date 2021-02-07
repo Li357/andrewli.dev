@@ -2,7 +2,7 @@
 layout: stackoverflow
 title: 'Why does this array-like object behave like this?'
 qalink: https://stackoverflow.com/q/44815940/5647260
-tags: javascript
+tags: cs:javascript
 ---
 
 ## Question

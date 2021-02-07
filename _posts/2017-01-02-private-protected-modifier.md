@@ -2,7 +2,7 @@
 layout: stackoverflow
 title: 'Does Java have a “private protected” access modifier?'
 qalink: https://stackoverflow.com/q/41431533/5647260
-tags: java
+tags: cs:java
 ---
 
 ## Question

@@ -2,7 +2,7 @@
 layout: stackoverflow
 title: 'Why does instanceof evaluate to true here?'
 qalink: https://stackoverflow.com/q/45772705/5647260
-tags: node.js
+tags: cs:node.js
 ---
 
 ## Question

@@ -8,7 +8,7 @@ description: I'm Andrew Li, high school senior from Omaha, Nebraska. Currently a
 
 ![Portrait](/assets/images/portrait.jpg)
 
-I'm Andrew Li, high school senior from Omaha, Nebraska. Currently a student and **number theory TA** at the University of Nebraska-Omaha. Previously a **student researcher** in mathematics and a **cybersecurity intern** there.
+I'm Andrew Li, high school senior from Omaha, Nebraska. I'm currently a **student** and **number theory TA** at the University of Nebraska-Omaha. I was previously a **mathematics student researcher** and **cybersecurity intern** there.
 
 I ❤️ building web and mobile apps for fun and learning new math. On the arts side, I'm a nationally-recognized jazz musician on the alto sax.
 
