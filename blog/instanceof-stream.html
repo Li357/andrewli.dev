@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Why does instanceof evaluate to true here? | Andrew Li</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Why does instanceof evaluate to true here?" />
+<meta name="author" content="Andrew Li" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Question" />
+<meta property="og:description" content="Question" />
+<link rel="canonical" href="https://andrewli.dev/blog/instanceof-stream" />
+<meta property="og:url" content="https://andrewli.dev/blog/instanceof-stream" />
+<meta property="og:site_name" content="Andrew Li" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-08-19T00:00:00-05:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Why does instanceof evaluate to true here?" />
+<meta name="twitter:site" content="@li_357" />
+<meta name="twitter:creator" content="@li_357" />
+<script type="application/ld+json">
+{"author":{"@type":"Person","name":"Andrew Li"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://andrewli.dev/blog/instanceof-stream"},"description":"Question","url":"https://andrewli.dev/blog/instanceof-stream","@type":"BlogPosting","headline":"Why does instanceof evaluate to true here?","dateModified":"2017-08-19T00:00:00-05:00","datePublished":"2017-08-19T00:00:00-05:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/assets/images/favicon.ico" />
+    <link rel="stylesheet" href="/css/default.css" />
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BPPP33YGCV"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-BPPP33YGCV');
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <nav class="nav">
+        <a href="/" class="nav__home"><svg  xmlns="http://www.w3.org/2000/svg" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 128 128" style="enable-background:new 0 0 128 128;" space="preserve">
+  <path d="M0,0v128h128V0H0z M91.5,90.9c-3.7-0.1-8.3-0.2-13.8-0.2c-5.8,0-10,0.1-12.8,0.2v-1.5c1.4,0,2.8-0.2,4.1-0.7 c0.8-0.4,1.3-1.2,1.3-2.1c-0.1-1.3-0.4-2.5-0.9-3.6L56.2,50.7l-7.3,20.7c-1.6,4.7-2.5,8.5-2.5,11.3c0,4.4,2.1,6.6,6.2,6.8v1.5 c-3.8-0.2-7.1-0.2-9.9-0.2c-2.4,0-4.4,0.1-5.9,0.2v-1.5c1.6-0.9,3-2.1,4-3.6c1.6-2.2,2.8-4.5,3.6-7.1l14.8-41.6c1.6,0.1,3,0.2,4,0.2 s2.3-0.1,3.9-0.2L87,84.5c0.5,1.3,1.2,2.6,2.2,3.6c0.6,0.7,1.4,1.1,2.3,1.2V90.9z"/>
+</svg></a>
+        <div class="nav__links">
+          <a href="/about">ABOUT</a>
+        </div>
+      </nav>
+      <main class="content">
+
+<link rel="stylesheet" href="/css/post.css" />
+<div class="header">
+  <h1>Why does instanceof evaluate to true here?</h1>
+  <span class="subtitle">Aug 2017</span>
+</div>
+<link rel="stylesheet" href="/css/stackoverflow.css" />
+
+<p><i>This is an answer of mine <a href="https://stackoverflow.com/q/45772705/5647260">from Stack Overflow</a> to a question I thought was particularly interesting.</i></p>
+
+<h2 id="question">Question</h2>
+
+<p>In this snippet, the statement <code class="language-plaintext highlighter-rouge">f instanceof PipeWritable</code> returns true (Node v8.4.0):</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">stream</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">stream</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">fs</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="kd">class</span> <span class="nx">PipeWritable</span> <span class="kd">extends</span> <span class="nx">stream</span><span class="p">.</span><span class="nx">Writable</span> <span class="p">{</span>
+    <span class="kd">constructor</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">const</span> <span class="nx">s</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PipeWritable</span><span class="p">();</span>
+<span class="kd">const</span> <span class="nx">f</span> <span class="o">=</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">createWriteStream</span><span class="p">(</span><span class="dl">'</span><span class="s1">/tmp/test</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">f</span> <span class="k">instanceof</span> <span class="nx">PipeWritable</span><span class="p">);</span> <span class="c1">// true ... ???</span>
+</code></pre></div></div>
+
+<p><strong>Object <code class="language-plaintext highlighter-rouge">s</code></strong>:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">Object.getPrototypeOf(s)</code> is <code class="language-plaintext highlighter-rouge">PipeWritable {}</code></li>
+  <li><code class="language-plaintext highlighter-rouge">s.constructor</code> is <code class="language-plaintext highlighter-rouge">[Function: PipeWritable]</code></li>
+  <li><code class="language-plaintext highlighter-rouge">PipeWritable.prototype</code> is <code class="language-plaintext highlighter-rouge">PipeWritable {}</code></li>
+</ul>
+
+<p><strong>Object <code class="language-plaintext highlighter-rouge">f</code>:</strong></p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">Object.getPrototypeOf(f)</code> is <code class="language-plaintext highlighter-rouge">WriteStream { ... }</code></li>
+  <li><code class="language-plaintext highlighter-rouge">f.constructor</code> is <code class="language-plaintext highlighter-rouge">[Function: WriteStream] ...</code></li>
+  <li><code class="language-plaintext highlighter-rouge">stream.WriteStream.prototype</code> is <code class="language-plaintext highlighter-rouge">Writable { ... }</code></li>
+</ul>
+
+<p><strong>Prototype chains</strong>:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Object f                    Object s
+---------------------       --------------------
+  Writable                    PipeWritable
+    Stream                      Writable
+      EventEmitter                Stream
+        Object                      EventEmitter
+                                      Object
+</code></pre></div></div>
+
+<p>Following the <a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Operators/instanceof">definition of <strong>instanceof</strong></a>:</p>
+<blockquote>
+  <p>The instanceof operator tests whether an object in its prototype chain has the prototype property of a constructor.</p>
+</blockquote>
+
+<p>I would expect that <code class="language-plaintext highlighter-rouge">(f instanceof PipeWritable) === false</code>, because <code class="language-plaintext highlighter-rouge">PipeWritable</code> is not in the prototype chain of <code class="language-plaintext highlighter-rouge">f</code> (the chain above is verified by calls of <code class="language-plaintext highlighter-rouge">Object.getPrototypeOf(...)</code>).<br />
+But it returns <code class="language-plaintext highlighter-rouge">true</code>, therefore something is wrong in my analysis.</p>
+
+<p>What’s the correct answer?</p>
+
+<h2 id="answer">Answer</h2>
+
+<p>This is due to a certain part of code in the Node.js source, in <a href="https://github.com/nodejs/node/blob/master/lib/_stream_writable.js#L175"><code class="language-plaintext highlighter-rouge">_stream_writable.js</code></a>:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">realHasInstance</span><span class="p">;</span>
+<span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nb">Symbol</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">function</span><span class="dl">'</span> <span class="o">&amp;&amp;</span> <span class="nb">Symbol</span><span class="p">.</span><span class="nx">hasInstance</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">realHasInstance</span> <span class="o">=</span> <span class="nb">Function</span><span class="p">.</span><span class="nx">prototype</span><span class="p">[</span><span class="nb">Symbol</span><span class="p">.</span><span class="nx">hasInstance</span><span class="p">];</span>
+  <span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span><span class="p">(</span><span class="nx">Writable</span><span class="p">,</span> <span class="nb">Symbol</span><span class="p">.</span><span class="nx">hasInstance</span><span class="p">,</span> <span class="p">{</span>
+    <span class="na">value</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">object</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">realHasInstance</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">object</span><span class="p">))</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+
+      <span class="k">return</span> <span class="nx">object</span> <span class="o">&amp;&amp;</span> <span class="nx">object</span><span class="p">.</span><span class="nx">_writableState</span> <span class="k">instanceof</span> <span class="nx">WritableState</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">});</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+  <span class="nx">realHasInstance</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">object</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">object</span> <span class="k">instanceof</span> <span class="k">this</span><span class="p">;</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>By <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-instanceofoperator">language specification</a>, the <code class="language-plaintext highlighter-rouge">instanceof</code> operator uses the well-known symbol <code class="language-plaintext highlighter-rouge">@@hasInstance</code> to check if an object <em>O</em> is an instance of constructor <em>C</em>:</p>
+
+<blockquote>
+  <h3 id="1294-runtime-semantics-instanceofoperatoro-c">12.9.4 Runtime Semantics: InstanceofOperator(O, C)</h3>
+
+  <p>The abstract operation <em>InstanceofOperator(O, C)</em> implements the generic algorithm for determining if an object <em>O</em> inherits from the inheritance path defined by constructor <em>C</em>. This abstract operation performs the following steps:</p>
+
+  <ol>
+    <li>If <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-ecmascript-data-types-and-values">Type</a>(<em>C</em>) is not Object, throw a <strong>TypeError</strong> exception.</li>
+    <li>Let <em>instOfHandler</em> be <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-getmethod">GetMethod</a>(<em>C</em>,@@hasInstance).</li>
+    <li><a href="http://www.ecma-international.org/ecma-262/6.0/#sec-returnifabrupt">ReturnIfAbrupt</a>(<em>instOfHandler</em>).</li>
+    <li>If <em>instOfHandler</em> is not <strong>undefined</strong>, then<br />
+a. Return <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-toboolean">ToBoolean</a>(<a href="http://www.ecma-international.org/ecma-262/6.0/#sec-call">Call</a>(<em>instOfHandler</em>, <em>C</em>, <em>«O»</em>)).</li>
+    <li>If <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-iscallable">IsCallable</a>(<em>C</em>) is <strong>false</strong>, throw a <strong>TypeError</strong> exception.</li>
+    <li>Return <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-ordinaryhasinstance">OrdinaryHasInstance</a>(<em>C</em>, <em>O</em>).</li>
+  </ol>
+</blockquote>
+
+<p>Now let me break down the code above for you, section by section:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">realHasInstance</span><span class="p">;</span>
+<span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nb">Symbol</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">function</span><span class="dl">'</span> <span class="o">&amp;&amp;</span> <span class="nb">Symbol</span><span class="p">.</span><span class="nx">hasInstance</span><span class="p">)</span> <span class="p">{</span>
+  <span class="err">…</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+  <span class="err">…</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The above snippet defines <code class="language-plaintext highlighter-rouge">realHasInstance</code>, checks if <code class="language-plaintext highlighter-rouge">Symbol</code> is defined and if the well-known symbol <code class="language-plaintext highlighter-rouge">hasInstance</code> exists. In your case, it does, so we’ll ignore the <code class="language-plaintext highlighter-rouge">else</code> branch. Next:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">realHasInstance</span> <span class="o">=</span> <span class="nb">Function</span><span class="p">.</span><span class="nx">prototype</span><span class="p">[</span><span class="nb">Symbol</span><span class="p">.</span><span class="nx">hasInstance</span><span class="p">];</span>
+</code></pre></div></div>
+
+<p>Here, <code class="language-plaintext highlighter-rouge">realHasInstance</code> is assigned to <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-function.prototype-@@hasinstance"><code class="language-plaintext highlighter-rouge">Function.prototype[@@hasInstance]</code></a>:</p>
+
+<blockquote>
+  <h3 id="19236-functionprototypehasinstance--v-">19.2.3.6 Function.prototype[@@hasInstance] ( V )</h3>
+
+  <p>When the @@hasInstance method of an object <em>F</em> is called with value <em>V</em>, the following steps are taken:</p>
+
+  <ol>
+    <li>Let <em>F</em> be the <strong>this</strong> value.</li>
+    <li>Return <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-ordinaryhasinstance">OrdinaryHasInstance</a>(<em>F</em>, <em>V</em>).</li>
+  </ol>
+</blockquote>
+
+<p>The <code class="language-plaintext highlighter-rouge">@@hasInstance</code> method of <code class="language-plaintext highlighter-rouge">Function</code> just calls OrdinaryHasInstance. Next:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span><span class="p">(</span><span class="nx">Writable</span><span class="p">,</span> <span class="nb">Symbol</span><span class="p">.</span><span class="nx">hasInstance</span><span class="p">,</span> <span class="p">{</span>
+  <span class="na">value</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">object</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">realHasInstance</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">object</span><span class="p">))</span>
+      <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+
+    <span class="k">return</span> <span class="nx">object</span> <span class="o">&amp;&amp;</span> <span class="nx">object</span><span class="p">.</span><span class="nx">_writableState</span> <span class="k">instanceof</span> <span class="nx">WritableState</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>This defines a new property on the <code class="language-plaintext highlighter-rouge">Writable</code> constructor, the well-known symbol <code class="language-plaintext highlighter-rouge">hasInstance</code> – essentially implementing its own custom version of <code class="language-plaintext highlighter-rouge">hasInstance</code>. The value of <code class="language-plaintext highlighter-rouge">hasInstance</code> is a function that takes one argument, the object that is being tested by <code class="language-plaintext highlighter-rouge">instanceof</code>, in this case <code class="language-plaintext highlighter-rouge">f</code>.</p>
+
+<p>The next line, the if statement, checks if <code class="language-plaintext highlighter-rouge">realHasInstance.call(this, object)</code> is truthy. Mentioned earlier, <code class="language-plaintext highlighter-rouge">realHasInstance</code> is assigned to <code class="language-plaintext highlighter-rouge">Function.prototype[@@hasInstance]</code> which is actually calling the internal operation <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-ordinaryhasinstance">OrdinaryHasInstance(C, O)</a>. The operation OrdinaryHasInstance just checks if O is an instance of C as you and MDN described, by looking for the constructor in the prototype chain.</p>
+
+<p>In this case, a Writable <code class="language-plaintext highlighter-rouge">f</code> is not an instance of a subclass of Writable (<code class="language-plaintext highlighter-rouge">PipeWritable</code>) thus <code class="language-plaintext highlighter-rouge">realHasInstance.call(this, object)</code> is false. Since that is false, it goes to the next line:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">return</span> <span class="nx">object</span> <span class="o">&amp;&amp;</span> <span class="nx">object</span><span class="p">.</span><span class="nx">_writableState</span> <span class="k">instanceof</span> <span class="nx">WritableState</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Since <code class="language-plaintext highlighter-rouge">object</code>, or <code class="language-plaintext highlighter-rouge">f</code> in this case, is truthy, and since <code class="language-plaintext highlighter-rouge">f</code> is a Writable with a <code class="language-plaintext highlighter-rouge">_writableState</code> property that is an instance of <code class="language-plaintext highlighter-rouge">WritableState</code>, <code class="language-plaintext highlighter-rouge">f instanceof PipeWritable</code> is <strong>true</strong>.</p>
+
+<hr />
+
+<p>The reason for this implementation is in the <a href="https://github.com/nodejs/node/blob/master/lib/_stream_writable.js#L173">comments</a>:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Test _writableState for inheritance to account for Duplex streams,</span>
+<span class="c1">// whose prototype chain only points to Readable.</span>
+</code></pre></div></div>
+
+<p>Because Duplex streams are technically Writables, but their prototype chains only point to Readable, an extra check to see if <code class="language-plaintext highlighter-rouge">_writableState</code> is an instance of <code class="language-plaintext highlighter-rouge">WritableState</code> allows <code class="language-plaintext highlighter-rouge">duplexInstance instanceof Writable</code> to be true. This has a side effect that you discovered – a Writable being ‘an instance of a child class’. This is a bug and should be reported.</p>
+
+<p>This is actually even reported in the <a href="https://nodejs.org/api/stream.html#stream_implementing_a_duplex_stream">documentation</a>:</p>
+
+<blockquote>
+  <p>Note: The <code class="language-plaintext highlighter-rouge">stream.Duplex</code> class prototypically inherits from <code class="language-plaintext highlighter-rouge">stream.Readable</code> and parasitically from <code class="language-plaintext highlighter-rouge">stream.Writable</code>, but <code class="language-plaintext highlighter-rouge">instanceof</code> will work properly for both base classes due to overriding <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/hasInstance"><code class="language-plaintext highlighter-rouge">Symbol.hasInstance</code></a> on <code class="language-plaintext highlighter-rouge">stream.Writable</code>.</p>
+</blockquote>
+
+<p>There are consequences to inheriting parasitcally from Writable as shown here.</p>
+
+<hr />
+
+<p>I submitted an <a href="https://github.com/nodejs/node/issues/14943">issue on GitHub</a> and it looks like it’ll be fixed. As <a href="https://stackoverflow.com/questions/45772705/why-does-instanceof-evaluate-to-true-here#comment78504779_45773086">Bergi mentioned</a>, adding a check to see if <code class="language-plaintext highlighter-rouge">this === Writable</code>, making sure only Duplex streams were instances of Writable when using <code class="language-plaintext highlighter-rouge">instanceof</code>. There’s a <a href="https://github.com/nodejs/node/pull/14945">pull request</a>.</p>
+
+<div class="qed">■</div>
+
+<div id="footnote-toast"></div>
+<script>
+  let currTimeout;
+  const timeout = 2000;
+  const toast = document.getElementById('footnote-toast');
+  const footnoteLinks = document.querySelectorAll('.footnote');
+
+  footnoteLinks.forEach((footnoteLink) => {
+    footnoteLink.addEventListener('mouseenter', () => {
+      const href = footnoteLink.getAttribute('href');
+      const footnoteContent = document.getElementById(href.slice(1)).querySelector('p');
+      const clonedContent = footnoteContent.cloneNode(true);
+      clonedContent.removeChild(clonedContent.querySelector('a.reversefootnote'));
+
+      toast.innerHTML = clonedContent.innerHTML;
+      clearTimeout(currTimeout);
+      toast.classList.add('active');
+    });
+
+    footnoteLink.addEventListener('mouseleave', () => {
+      currTimeout = setTimeout(() => {
+        toast.classList.remove('active');
+      }, timeout);
+    });
+  });
+
+  toast.addEventListener('mouseenter', () => {
+    clearTimeout(currTimeout);
+  });
+
+  toast.addEventListener('mouseleave', () => {
+    currTimeout = setTimeout(() => {
+      toast.classList.remove('active');
+    }, timeout);
+  });
+</script></main>
+      <footer></footer>
+    </div>
+    <script>
+      const toggler = document.createElement('span');
+      toggler.classList.add('theme-toggler');
+      const indicator = document.createElement('span');
+      indicator.classList.add('indicator');
+      toggler.append(indicator);
+      const links = document.querySelector('.nav__links');
+      links.prepend(toggler);
+
+      const currTheme = localStorage.getItem('theme');
+
+      function setTheme(theme) {
+        document.documentElement.dataset.theme = theme;
+        indicator.innerText = theme === 'dark' ? 'D' : 'L';
+      }
+
+      if (currTheme) {
+        setTheme(currTheme);
+      } else {
+        const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
+        setTheme(systemDark.matches ? 'dark' : 'light');
+      }
+
+      toggler.addEventListener('click', () => {
+        const newTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+        setTheme(newTheme);
+        localStorage.setItem('theme', newTheme);
+      });
+    </script>
+  </body>
+</html>
