@@ -3,8 +3,7 @@
 
 .content {
   & img {
-    background-clip: padding-box;
-    border: var(--highlight-border);
+    border-radius: calc(2 * var(--border-radius));
   }
 
   & .profiles {
