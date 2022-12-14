@@ -1,0 +1,17 @@
+.name { margin-top: 10rem; }
+.name svg path { stroke-width: 0.75; stroke-linecap: round; stroke: var(--color-foreground); fill: var(--color-foreground); }
+.name svg.animated { display: none; }
+.name svg.animated path { animation: 2s ease forwards writeIn; fill-opacity: 0; display: none; }
+.name h2 { margin: 0; }
+
+@keyframes writeIn { to { stroke-dashoffset: 0; fill-opacity: 1; } }
+.post { padding: 10px 0; }
+.post h3 { margin: 5px 0; }
+.post h3 a { font-weight: bold; color: var(--color-foreground); transition: var(--transition-ease); }
+.post h3 a:hover { color: var(--color-active); }
+.post .subtitle { display: flex; align-items: center; }
+.post .subtitle .tag { border-radius: 50px; /* something big */ color: var(--color-background); padding: 0 7.5px; font-size: 0.75rem; margin: 2.5px; }
+.post .subtitle .tag:first-child { margin-left: 10px; }
+.post .subtitle .tag.math { background-color: var(--color-tag-math); }
+.post .subtitle .tag.cs { background-color: var(--color-tag-cs); }
+.post .subtitle .tag.econ { background-color: var(--color-tag-econ); }
