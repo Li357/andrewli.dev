@@ -1,42 +1,88 @@
 ---
 ---
 
-.name {
-  margin-top: 10rem;
 
-  & svg {
-    & path {
-      stroke-width: 0.75;
-      stroke-linecap: round;
-      stroke: var(--color-foreground);
-      fill: var(--color-foreground);
-    }
+.profile {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 50px 0;
 
-    &.animated {
-      display: none;
+  & img {
+    width: 100%;
+    border-radius: 50%;
+  }
 
-      & path {
-        animation: 2s ease forwards writeIn;
-        fill-opacity: 0;
-        display: none;
-      }
-    }
+  & .bio {
+    margin-left: 50px;
   }
 
   & h2 {
     margin: 0;
   }
-}
 
-@keyframes writeIn {
-  to {
-    stroke-dashoffset: 0;
-    fill-opacity: 1;
+  & .socials {
+    margin: 10px 0;
+    height: 25px;
+
+    & a {
+      margin-right: 10px;
+      
+      &:last-child {
+        margin-right: 0;
+      }
+
+      & svg {
+        height: 100%;
+
+        & > path {
+          fill: var(--color-foreground);
+        }
+      }
+    }
   }
 }
 
-.post {
+.courses {
+  overflow: auto;
+  display: flex;
+  flex: 1;
+  gap: 10px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  & .course {
+    display: flex;
+    flex-direction: column;
+    min-width: 220px;
+    border: 2px solid var(--color-inactive);
+    border-radius: var(--border-radius);
+    padding: 10px;
+
+    & h5, h6 {
+      margin: 0;
+    }
+
+    & h6 {
+      color: var(--color-inactive);
+    }
+
+    & p {
+      font-size: 0.8rem;
+    } 
+  } 
+}
+
+.project {
   padding: 10px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  & img {
+    max-height: 150px;
+    width: auto;
+  }
 
   & h3 {
     margin: 5px 0;
@@ -71,12 +117,16 @@
         background-color: var(--color-tag-math);
       }
 
-      &.cs {
-        background-color: var(--color-tag-cs);
+      &.eecs {
+        background-color: var(--color-tag-eecs);
       }
 
-      &.econ {
-        background-color: var(--color-tag-econ);
+      &.misc {
+        background-color: var(--color-tag-misc);
+      }
+
+      &.bk {
+        background-color: var(--color-tag-bk);
       }
     }
   }

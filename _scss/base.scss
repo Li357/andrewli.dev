@@ -54,8 +54,9 @@ html {
   --inset-padding: 20px;
 
   --color-tag-math: #0785ed;
-  --color-tag-cs: #fc3f58;
-  --color-tag-econ: #07c741;
+  --color-tag-eecs: #fc3f58;
+  --color-tag-misc: #07c741;
+  --color-tag-bk: #2ec9f4; 
 }
 
 html,
@@ -78,7 +79,7 @@ a:visited {
 }
 
 p {
-  margin: var(--margin-vertical) 0;
+  margin: 0;
 }
 
 img {
@@ -100,6 +101,10 @@ blockquote {
 
 span.subtitle {
   color: var(--color-inactive);
+}
+
+.highlight {
+  border-radius: var(--border-radius);
 }
 
 pre {

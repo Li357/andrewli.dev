@@ -3,16 +3,11 @@ permalink: /blog/:slug
 
 title: Andrew Li
 description: >-
-  I'm a student, developer, and jazz musician from Omaha. I also blog about math 
-  and computer science, with an emphasis on intuition.
+  Hi! I'm Andrew, a senior at MIT interested in computers, electronics, and jazz
 author:
   name: Andrew Li
-  twitter: li_357
   image: /assets/images/andrewli.jpg
-twitter:
-  username: li_357
-  card: summary_large_image
-tagline: Student, developer, and musician.
+tagline: Engineer and musician
 baseurl: ''
 url: 'https://andrewli.dev'
 
@@ -20,7 +15,6 @@ url: 'https://andrewli.dev'
 social:
   name: Andrew Li
   links:
-    - https://twitter.com/li_357
     - https://www.linkedin.com/in/andrew-li-622261180
     - https://github.com/Li357
     - https://stackoverflow.com/users/5647260/andrew-li
@@ -33,6 +27,30 @@ profiles:
     link: https://www.linkedin.com/in/andrew-li-622261180
   - logo: assets/images/so.svg
     link: https://stackoverflow.com/users/5647260/andrew-li
+
+courses:
+  - number: 6.111
+    name: Digital Systems Lab
+    description: FPGAs, testbenching, and UART/SPI/DSP galore
+  - number: 6.172
+    name: Performance Engineering
+    description: Optimizing memory allocators, mulithreading renderering, profiling C and ASM to death
+  - number: 6.131
+    name: Power Electronics
+    description: Analog and regulator design for go-carts motors, lighting systems, speakers
+  - number: 6.602
+    name: High-Frequency IC Design
+    description: Matching networks, on-chip parasitics, low-noise amplifiers
+  - number: 6.824
+    name: Distributed Systems
+    description: File systems, transactions, fault-tolerance, and a whole lotta Golang
+  - number: 6.858
+    name: Computer Security
+    description: Binary exploitation, buffer overflows, WebAssembly, HTTPS
+  - number: 21M.370
+    name: Digital Instrument Design
+    description: Building wacky instruments with embedded systems
+
 
 plugins:
   - jekyll-inline-svg
