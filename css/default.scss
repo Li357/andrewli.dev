@@ -21,7 +21,8 @@ div.container {
 
 @media (max-width: 800px) {
   div.container {
-    margin: 0 20px;
+    padding: 0 20px;
+    width: 100%;
   }
 
   .small {
@@ -30,6 +31,10 @@ div.container {
 
   .big {
     display: none;
+  }
+
+  html {
+    font-size: 12px;
   }
 }
 
