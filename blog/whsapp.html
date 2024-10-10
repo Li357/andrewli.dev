@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>WHS Scheduler | Andrew Li</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="WHS Scheduler" />
+<meta name="author" content="Andrew Li" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="An iOS/Android app to track your Westside High School schedule, meet with friends and teachers" />
+<meta property="og:description" content="An iOS/Android app to track your Westside High School schedule, meet with friends and teachers" />
+<link rel="canonical" href="https://andrewli.dev/blog/whsapp" />
+<meta property="og:url" content="https://andrewli.dev/blog/whsapp" />
+<meta property="og:site_name" content="Andrew Li" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-05-01T00:00:00-05:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="WHS Scheduler" />
+<script type="application/ld+json">
+{"author":{"@type":"Person","name":"Andrew Li"},"description":"An iOS/Android app to track your Westside High School schedule, meet with friends and teachers","url":"https://andrewli.dev/blog/whsapp","@type":"BlogPosting","headline":"WHS Scheduler","dateModified":"2021-05-01T00:00:00-05:00","datePublished":"2021-05-01T00:00:00-05:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://andrewli.dev/blog/whsapp"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://use.typekit.net/qqf1aiq.css">
+    <link rel="icon" href="/assets/images/favicon.ico" />
+    <link rel="stylesheet" href="/css/default.css" />
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BPPP33YGCV"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-BPPP33YGCV');
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <nav class="nav">
+        <a href="/" class="nav__home"><svg  xmlns="http://www.w3.org/2000/svg" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 128 128" style="enable-background:new 0 0 128 128;" space="preserve">
+  <path d="M0,0v128h128V0H0z M91.5,90.9c-3.7-0.1-8.3-0.2-13.8-0.2c-5.8,0-10,0.1-12.8,0.2v-1.5c1.4,0,2.8-0.2,4.1-0.7 c0.8-0.4,1.3-1.2,1.3-2.1c-0.1-1.3-0.4-2.5-0.9-3.6L56.2,50.7l-7.3,20.7c-1.6,4.7-2.5,8.5-2.5,11.3c0,4.4,2.1,6.6,6.2,6.8v1.5 c-3.8-0.2-7.1-0.2-9.9-0.2c-2.4,0-4.4,0.1-5.9,0.2v-1.5c1.6-0.9,3-2.1,4-3.6c1.6-2.2,2.8-4.5,3.6-7.1l14.8-41.6c1.6,0.1,3,0.2,4,0.2 s2.3-0.1,3.9-0.2L87,84.5c0.5,1.3,1.2,2.6,2.2,3.6c0.6,0.7,1.4,1.1,2.3,1.2V90.9z"/>
+</svg></a>
+        <div class="nav__links">
+        </div>
+      </nav>
+      <main class="content">
+
+
+  <link rel="stylesheet" href="/css/monokai.css" />
+
+
+<link rel="stylesheet" href="/css/post.css" />
+<div class="header">
+  <h1>WHS Scheduler</h1>
+  <span class="subtitle">May 2021</span>
+</div>
+<p><strong>TLDR:</strong> <em>I built a React Native mobile app with &gt;10,000 downloads for my high school classmates to track their schedules, instead of relying on paper or a janky legacy website. It involved REST API reverse engineering, bug-testing in production/lessons of maintainability, and working with admin for 5 years. You can view the code <a href="https://github.com/Li357/WHS">here</a>.</em></p>
+
+<p><br /></p>
+
+<p>Since this project is pretty old I no longer have all the documentation but I still remember the process I went through which I still think is pretty interesting!</p>
+
+<h2 id="the-problem">The Problem</h2>
+
+<p>Westside High School <a class="footnote" href="#fn:nolonger">has a unique “modular scheduling” system</a><sup id="fnref:nolonger" role="doc-noteref"><a href="#fn:nolonger" class="footnote">1</a></sup>: classes didn’t happen in fixed periods. Instead they occurred for 1 or 1.5 multiples of 14 total “mods,” aka 35- or 52.5-minute increments at unrememberable times depending on if they were “large group” – lectures, or “small group” – individual sections. Oh–and Wednesdays ran on a 22-minute-shorter schedule. It was a dedicated admin’s job to figure this all out for every student <a class="footnote" href="#fn:shoutout">with Excel!</a><sup id="fnref:shoutout" role="doc-noteref"><a href="#fn:shoutout" class="footnote">2</a></sup></p>
+
+<p><br /></p>
+
+<p>The idea was to prep students for college life. If you didn’t have a class during a mod, it was “open” and you could go to various “IMCs,” instructional material centers, to get help from teachers in specific departments including social studies, science, math, art, etc similar to office hours (I always hung around the band IMC, very little work was done). You could also be “cross-sectioned” if you were lucky enough to have two classes during the same mod.</p>
+
+<p><br /></p>
+
+<p>Just starting high school, this was pretty overwhelming. Your only options were either the paper schedule your counselor printed on the first day, or using an old .NET webapp hosted on an obscure Azure domain designed for a desktop monitor (UX?!) that was down half the time anyways. I distinctly remember the first week pulling out my tattered paper schedule on my way to Science 9–or was it Honors English? Stuffing it in my backpack wasn’t the best idea.</p>
+
+<p><br /></p>
+
+<p><img src="/assets/whsapp/joever.png" alt="Live footage of me holding my paper schedule in the landing hallway" />
+<em>Live footage of me holding my schedule and remembering I can code</em></p>
+
+<p><br /></p>
+
+<p>I had been messing around with React Native the summer before and wanted to make something <em>real,</em> not Todo App #2488. I started doing some research.</p>
+
+<h2 id="inspect-element">Inspect Element</h2>
+
+<p>I needed a way to programmatically pull my schedule from the school website. Having learned about REST APIs recently, I figured there was some endpoint I could POST to return a JSON version of my schedule. I wasn’t so lucky. It seemed like everything was rendered server-side and command-Fs for <code class="language-plaintext highlighter-rouge">$.ajax</code> or <code class="language-plaintext highlighter-rouge">XMLHttpRequest</code> were moot. But inspecting-element like a l33t-hax0r I <em>was</em> lucky enough to find a hidden gem buried in the rendered page on login:</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;script&gt;</span>
+<span class="nb">window</span><span class="p">.</span><span class="nx">_pageDataJson</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">{"schedule":[{"sourceId":26559,"sourceType":"course","title":"English 1 S2","body":"Rm. 113","roomNumber":"113","sectionNumber":5,"phaseNumber":1,"day":2,"startMod":14,"length":1,"endMod":15,"data":{"courseId":"476"}}],"semesterId":6,"teacherId":"523","action":"Student","controller":"Student","userId":"3175"}</span><span class="dl">'</span><span class="p">;</span>
+<span class="nt">&lt;/script&gt;</span>
+</code></pre></div></div>
+
+<p><strong>We’re in!</strong> I now had a JSON representation of the schedule with oodles of information. And after wrestling with <code class="language-plaintext highlighter-rouge">react-native-fetch</code>’s cookie quirks, I was able to programmatically send a POST to the login page, request a redirect, then use <a href="https://www.npmjs.com/package/react-native-cheerio">Cheerio</a> to parse the page and extract what I needed. I also could extract <strong>school photos and ID numbers.</strong></p>
+
+<h2 id="an-app-takes-shape">An App Takes Shape</h2>
+
+<p>Once I knew the idea was feasible, I had a few design requirements:</p>
+
+<ul>
+  <li>Check your next class</li>
+  <li>How long of passing period you had left</li>
+  <li>View my schedule for every day <em>in a form that actually fit my screen</em></li>
+</ul>
+
+<p>With a few Node.js scripts, I wrote some spaghetti code (with then-blazing-new ES6 functional array <code class="language-plaintext highlighter-rouge">reduce</code>, <code class="language-plaintext highlighter-rouge">forEach</code>, and <code class="language-plaintext highlighter-rouge">map</code>) to</p>
+
+<ol>
+  <li>Group the list of “class items” in the JSON into days</li>
+  <li>Query the current, next classes, passing period duration given a certain datetime</li>
+  <li>Handle different schedules (Wednesdays, 1PM dismissals on holidays, etc.)</li>
+</ol>
+
+<p>With a few notecards I drew a few mockups (my sister had a few thoughts). Over the next week, I worked in parallel to turn the mockups into React component and soon I was able to do an ad-hoc build on a few of my friends’ phones as a “market test.”</p>
+
+<p><img src="/assets/whsapp/oldapp.png" alt="homepage of app" />
+<em>First version of the app, teacher names redacted</em></p>
+
+<p><br /></p>
+
+<p>Word spread like wildfire, so I got started on researching how to release a build to the Android and iOS app store. After negotiating a $99 check from the school administration and many countless nights spent configuring certificates, painfully waiting for Gradle builds, I released the app about a month later in early October.</p>
+
+<h2 id="crisis-strikes">Crisis Strikes</h2>
+
+<p>After a feature in the school newspaper, usage really began to ramp up. And so did the cracks of my brittle-untested code. The list included:</p>
+
+<ul>
+  <li>A school-wide announcement to “ignore the app” during our first assembly. I didn’t know these were a thing, and they threw off the entire day’s mod schedules</li>
+  <li>“★☆☆☆☆ I missed my cross-sectioned class!” – my app tracked this overlap but I’d forgot to make any UI 🤦</li>
+  <li>Edge cases for my schedule search algorithm that involved people sending me their raw website HTMLs for me to debug</li>
+</ul>
+
+<p>So to handle this I devised a few solutions:</p>
+
+<ul>
+  <li>Wrote a quick-and-dirty <strong>CRUD admin backend</strong> in <a class="footnote" href="#fn:era">Vue.js</a><sup id="fnref:era" role="doc-noteref"><a href="#fn:era" class="footnote">3</a></sup> backed by Express hosted on Heroku using MongoDB’s then free service to keep a list of “special dates” (assemblies, early dismissals, the works) so my app could dynamically change its behavior. Every time you opened the app, it would poll to see updates. Later I integrated snow days as well so it would give you a nice celebratory message.</li>
+  <li>Wrestled with React Native’s new support for <strong>flexbox to properly display cross-sectioned classes</strong>, and notify on the Dashboard that you had to decide which one to go to.</li>
+  <li>Added <strong>in-app bug and crash reporting</strong> with Bugsnag! This would send the entire internal state of the app (Redux) with passwords and IDs redacted. No more long debug email chains.</li>
+  <li>Added <strong>in-app feature requests.</strong> A lot of people who <em>wanted</em> ads? Or a paid version they could flex on their classmates with??</li>
+</ul>
+
+<p>But perhaps most exciting of all was <strong>over-the-air updates with Codepush.</strong> No more begging the admin to make an announcement over the PA to go to the app store and please-please-please update for a minor off-by-one. It was a rocky start, but I learned how to manage rollouts over different app versions, create migrations for Redux state when I added new features, and practice good deployment etiquette.</p>
+
+<p><br /></p>
+
+<p><img src="/assets/whsapp/branches.png" alt="my branches for managing hotfixes" /></p>
+
+<h2 id="sharing-with-qr-codes-with-0-budget">Sharing with QR Codes with $0 Budget</h2>
+
+<p>There was a feature I wanted to implement next: sharing schedules with your friends. This posed kind of a challenge though: the school’s REST API didn’t allow you to view other students’ schedules with your login cookie. Something something principle of least privilege. So I needed a method <em>only</em> via my app, when you and your friend had both authenticated separately.</p>
+
+<p><br /></p>
+
+<p>QR codes became the natural answer. I’d generate one with your local schedule data if you logged in and you could only scan a friends’ via my app. But I ran into a problem pretty fast: QR codes can only hold a max of <a href="https://stackoverflow.com/questions/12764334/qr-code-max-char-length">2953 bytes</a> and they look <strong>monstrous</strong> at that size. My bug reports contained schedule JSON blobs upwards of 30k bytes.</p>
+
+<p><img src="/assets/whsapp/largeqr.png" alt="177x177 QR code" />
+<em>Biblically accurate QR code (~1852 ASCII chars)</em></p>
+
+<p><br /></p>
+
+<p>I also couldn’t just store everyone’s schedules in my CRUD app: neither MongoDB’s nor Heroku’s free tier were forgiving and I was <em>cheap cheap</em>. So I came up with this really <em>really</em> scuffed scheme (you can see it <a href="https://github.com/Li357/WHS-App/blob/446f08e45c4ec5f3f27061256e20eb6b478ebc25/src/util/qr.js#L7-L19">here</a>)</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * QR Generation pipeline:
+ * Convoluted to allow for large schedules
+ * 
+ * schedule (JS object) --&gt; compressed (JS object) --&gt; binary (deflated after JSON stringified)
+ * --&gt; base64 --&gt; POSTed to API/shorten?d={base64} (d for 'data')
+ * 
+ * At endpoint /shorten, a URL with schedule data is shortened via bit.ly. The id of the generated 
+ * link is returned as JSON. The id (which is a bit.ly link without a protocol) is encoded as the QR code 
+ * 
+ * on scan --&gt; /expand?id={id from QR code} --&gt; bit.ly lookup retrieves the originally shortened URL with data
+ * --&gt; decodes base64 --&gt; uncompresses data --&gt; returns schedule
+ */</span>
+</code></pre></div></div>
+
+<p>The idea was first to compress the schedule JSON as much as possible. I didn’t want to go through the trouble of creating a <em>true binary representation</em>, so I opted to <strong>shorten key names, remove unwanted properties, turn objects into arrays with well-known indices.</strong> Then I’d turn the JSON into binary, base64 encode (in retrospect, this definitely didn’t help my case), then slap on a URL stub so that bit.ly would actually shorten it.</p>
+
+<p><br /></p>
+
+<p>Using the bit.ly’s shortened URL (and hopefully not exhausting my usage limit, I think I did a back of the napkin fully-connected graph type calculation) I’d encode that in the QR code. This would give me something at most <strong>a few tens of bytes!</strong> I was using bit.ly as my datastore instead of MongoDB! In hindsight, I definitely could’ve shelled out a few bucks (or asked the school admin to reimburse me), or even learned how to make a proper shortened encoding. But this was quick and dirty over winter break, and it worked.</p>
+
+<p><br /></p>
+
+<p>I piloted the feature with a few friends, but after the principal caught wind I unfortunately had to leave the feature unreleased. Maybe there was <a href="#fn:reason" class="footnote">a reason</a><sup id="fnref:reason" role="doc-noteref"><a href="#fn:reason" class="footnote">4</a></sup> to leave other students’ schedules inaccessible after all… in it’s place I added the ability to add teacher schedules. It was a fun engineering challenge while it lasted.</p>
+
+<h2 id="maintenance-and-inspiring-others">Maintenance and Inspiring Others</h2>
+
+<p>I spent the new few years maintaining the app, giving it a new makeover internally and externally. I simplified a lot of the code, rewrote much of it in TypeScript and added extensive unit testing with Jest for all the edge cases I’d encountered over the years. Now, <a href="https://github.com/Li357/WHS">the code lives on GitHub</a> with ~90% coverage. During the COVID years, I updated the app to handle an interesting E-learning change, where students were staggered to ensure 50% occupancy of the building.</p>
+
+<p><img src="/assets/whsapp/newapp.png" alt="new app look" />
+<em>App Store screenshots from v3 – with dark mode!</em></p>
+
+<p><br /></p>
+
+<p>On the less technical side, I got to meet a ton of new people from the project: freshman to seniors, teachers, school administration. It turned out, the project had inspired a few folks to pursure coding and create similar apps for our finals scheduling system. That, even more than all the technical stuff I learned along the way, was what made it worth it! It started a lot of conversation with friends I would’ve never talked to otherwise, and got me out of my shell.</p>
+
+<hr />
+
+<div class="footnotes" role="doc-endnotes">
+  <ol>
+    <li id="fn:nolonger" role="doc-endnote">
+      <p>Sadly, this is now <em>had</em>… I heard they switched back to the boring block scheduling. Time to update <a href="https://en.wikipedia.org/wiki/Westside_High_School_(Omaha)#Modular_schedule_system">Wikipedia</a> <a href="#fnref:nolonger" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:shoutout" role="doc-endnote">
+      <p>Shoutout Ms. Sosalla and Mr. Rhodes <a href="#fnref:shoutout" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:era" role="doc-endnote">
+      <p>I was in my “must-use-every-new-framework” era <a href="#fnref:era" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:reason" role="doc-endnote">
+      <p>The landing was where things went down, but people sometimes waited outside the classroom for you <a href="#fnref:reason" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+
+
+<div id="footnote-toast"></div>
+<script>
+  let currTimeout;
+  const timeout = 2000;
+  const toast = document.getElementById('footnote-toast');
+  const footnoteLinks = document.querySelectorAll('.footnote');
+
+  footnoteLinks.forEach((footnoteLink) => {
+    footnoteLink.addEventListener('mouseenter', () => {
+      const href = footnoteLink.getAttribute('href');
+      const footnoteContent = document.getElementById(href.slice(1)).querySelector('p');
+      const clonedContent = footnoteContent.cloneNode(true);
+      clonedContent.removeChild(clonedContent.querySelector('a.reversefootnote'));
+
+      toast.innerHTML = clonedContent.innerHTML;
+      clearTimeout(currTimeout);
+      toast.classList.add('active');
+    });
+
+    footnoteLink.addEventListener('mouseleave', () => {
+      currTimeout = setTimeout(() => {
+        toast.classList.remove('active');
+      }, timeout);
+    });
+  });
+
+  toast.addEventListener('mouseenter', () => {
+    clearTimeout(currTimeout);
+  });
+
+  toast.addEventListener('mouseleave', () => {
+    currTimeout = setTimeout(() => {
+      toast.classList.remove('active');
+    }, timeout);
+  });
+</script>
+</main>
+      <footer></footer>
+    </div>
+    <script>
+      const toggler = document.createElement('span');
+      toggler.classList.add('theme-toggler');
+      const indicator = document.createElement('span');
+      indicator.classList.add('indicator');
+      toggler.append(indicator);
+      const links = document.querySelector('.nav__links');
+      links.prepend(toggler);
+
+      const currTheme = localStorage.getItem('theme');
+
+      function setTheme(theme) {
+        document.documentElement.dataset.theme = theme;
+        indicator.innerText = theme === 'dark' ? 'D' : 'L';
+      }
+
+      if (currTheme) {
+        setTheme(currTheme);
+      } else {
+        const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
+        setTheme(systemDark.matches ? 'dark' : 'light');
+      }
+
+      toggler.addEventListener('click', () => {
+        const newTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+        setTheme(newTheme);
+        localStorage.setItem('theme', newTheme);
+      });
+    </script>
+  </body>
+</html>

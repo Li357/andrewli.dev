@@ -1,0 +1,6 @@
+.content img { border-radius: calc(2 * var(--border-radius)); }
+.content .profiles { margin: 10px 0; height: 25px; }
+.content .profiles a { margin-right: 10px; }
+.content .profiles a:last-child { margin-right: 0; }
+.content .profiles a svg { height: 100%; }
+.content .profiles a svg > path { fill: var(--color-foreground); }

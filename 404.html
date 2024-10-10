@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Not found | Andrew Li</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Not found" />
+<meta name="author" content="Andrew Li" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Hi! I’m Andrew, a senior at MIT interested in computers, electronics, and jazz" />
+<meta property="og:description" content="Hi! I’m Andrew, a senior at MIT interested in computers, electronics, and jazz" />
+<link rel="canonical" href="https://andrewli.dev/404" />
+<meta property="og:url" content="https://andrewli.dev/404" />
+<meta property="og:site_name" content="Andrew Li" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Not found" />
+<script type="application/ld+json">
+{"author":{"@type":"Person","name":"Andrew Li"},"description":"Hi! I’m Andrew, a senior at MIT interested in computers, electronics, and jazz","url":"https://andrewli.dev/404","@type":"WebPage","headline":"Not found","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://use.typekit.net/qqf1aiq.css">
+    <link rel="icon" href="/assets/images/favicon.ico" />
+    <link rel="stylesheet" href="/css/default.css" />
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BPPP33YGCV"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-BPPP33YGCV');
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <nav class="nav">
+        <a href="/" class="nav__home"><svg  xmlns="http://www.w3.org/2000/svg" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 128 128" style="enable-background:new 0 0 128 128;" space="preserve">
+  <path d="M0,0v128h128V0H0z M91.5,90.9c-3.7-0.1-8.3-0.2-13.8-0.2c-5.8,0-10,0.1-12.8,0.2v-1.5c1.4,0,2.8-0.2,4.1-0.7 c0.8-0.4,1.3-1.2,1.3-2.1c-0.1-1.3-0.4-2.5-0.9-3.6L56.2,50.7l-7.3,20.7c-1.6,4.7-2.5,8.5-2.5,11.3c0,4.4,2.1,6.6,6.2,6.8v1.5 c-3.8-0.2-7.1-0.2-9.9-0.2c-2.4,0-4.4,0.1-5.9,0.2v-1.5c1.6-0.9,3-2.1,4-3.6c1.6-2.2,2.8-4.5,3.6-7.1l14.8-41.6c1.6,0.1,3,0.2,4,0.2 s2.3-0.1,3.9-0.2L87,84.5c0.5,1.3,1.2,2.6,2.2,3.6c0.6,0.7,1.4,1.1,2.3,1.2V90.9z"/>
+</svg></a>
+        <div class="nav__links">
+        </div>
+      </nav>
+      <main class="content"><h1 id="nullpageexception">NullPageException</h1>
+
+<p>The page you requested doesn’t exist 😢 <a href="/">Back to safety?</a></p>
+</main>
+      <footer></footer>
+    </div>
+    <script>
+      const toggler = document.createElement('span');
+      toggler.classList.add('theme-toggler');
+      const indicator = document.createElement('span');
+      indicator.classList.add('indicator');
+      toggler.append(indicator);
+      const links = document.querySelector('.nav__links');
+      links.prepend(toggler);
+
+      const currTheme = localStorage.getItem('theme');
+
+      function setTheme(theme) {
+        document.documentElement.dataset.theme = theme;
+        indicator.innerText = theme === 'dark' ? 'D' : 'L';
+      }
+
+      if (currTheme) {
+        setTheme(currTheme);
+      } else {
+        const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
+        setTheme(systemDark.matches ? 'dark' : 'light');
+      }
+
+      toggler.addEventListener('click', () => {
+        const newTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+        setTheme(newTheme);
+        localStorage.setItem('theme', newTheme);
+      });
+    </script>
+  </body>
+</html>

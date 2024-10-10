@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>VOXOS: bringing Daft Punk to the FPGA | Andrew Li</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="VOXOS: bringing Daft Punk to the FPGA" />
+<meta name="author" content="Andrew Li" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="A MIDI-controllable Vocoder with all hand-written DSP" />
+<meta property="og:description" content="A MIDI-controllable Vocoder with all hand-written DSP" />
+<link rel="canonical" href="https://andrewli.dev/blog/voxos" />
+<meta property="og:url" content="https://andrewli.dev/blog/voxos" />
+<meta property="og:site_name" content="Andrew Li" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-12-13T00:00:00-06:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="VOXOS: bringing Daft Punk to the FPGA" />
+<script type="application/ld+json">
+{"author":{"@type":"Person","name":"Andrew Li"},"description":"A MIDI-controllable Vocoder with all hand-written DSP","url":"https://andrewli.dev/blog/voxos","@type":"BlogPosting","headline":"VOXOS: bringing Daft Punk to the FPGA","dateModified":"2023-12-13T00:00:00-06:00","datePublished":"2023-12-13T00:00:00-06:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://andrewli.dev/blog/voxos"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://use.typekit.net/qqf1aiq.css">
+    <link rel="icon" href="/assets/images/favicon.ico" />
+    <link rel="stylesheet" href="/css/default.css" />
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BPPP33YGCV"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-BPPP33YGCV');
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <nav class="nav">
+        <a href="/" class="nav__home"><svg  xmlns="http://www.w3.org/2000/svg" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 128 128" style="enable-background:new 0 0 128 128;" space="preserve">
+  <path d="M0,0v128h128V0H0z M91.5,90.9c-3.7-0.1-8.3-0.2-13.8-0.2c-5.8,0-10,0.1-12.8,0.2v-1.5c1.4,0,2.8-0.2,4.1-0.7 c0.8-0.4,1.3-1.2,1.3-2.1c-0.1-1.3-0.4-2.5-0.9-3.6L56.2,50.7l-7.3,20.7c-1.6,4.7-2.5,8.5-2.5,11.3c0,4.4,2.1,6.6,6.2,6.8v1.5 c-3.8-0.2-7.1-0.2-9.9-0.2c-2.4,0-4.4,0.1-5.9,0.2v-1.5c1.6-0.9,3-2.1,4-3.6c1.6-2.2,2.8-4.5,3.6-7.1l14.8-41.6c1.6,0.1,3,0.2,4,0.2 s2.3-0.1,3.9-0.2L87,84.5c0.5,1.3,1.2,2.6,2.2,3.6c0.6,0.7,1.4,1.1,2.3,1.2V90.9z"/>
+</svg></a>
+        <div class="nav__links">
+        </div>
+      </nav>
+      <main class="content">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
+
+
+
+
+<link rel="stylesheet" href="/css/post.css" />
+<div class="header">
+  <h1>VOXOS: bringing Daft Punk to the FPGA</h1>
+  <span class="subtitle">Dec 2023</span>
+</div>
+<p><strong>TLDR:</strong> I made a digital vocoder with MIDI support, an instrument that imparts your voice onto any source audio as heard in Daft Punk, Kraftwerk, and others’ music. It involved implementing DSP without third-party libraries, writing SPI/UART drivers, and wrestling with USB on a Xilinx FPGA.</p>
+
+<h2 id="the-plan">The Plan</h2>
+
+<p>I’m not really a singer and my <a href="#fn:mtpt" class="footnote">mouth trumpet</a><sup id="fnref:mtpt" role="doc-noteref"><a href="#fn:mtpt" class="footnote">1</a></sup> doesn’t really qualify. Let’s just say there’s a reason I stuck with instruments. So for my 6.111 (now 6.205) final project, I wanted to make something that could give me an extra boost. The vocoder, a historical instrument originally meant for “downsampling” spoken audio during wartime for efficient transmission, has found new use in electronic music. It’s how Daft Punk sounds like robots in <a href="https://www.youtube.com/watch?v=yydNF8tuVmU">Hard, Better, Faster, Stronger</a>. It essentially takes your voice and “matches” it to a specific frequency, a “carrier.” Back in the day, this carrier was beyond audible frequencies and sent over radio since sending the raw voice audio was infeasible. Nowadays, that carrier is another audible pitch, and the output is an almost autotune-like sound.</p>
+
+<p><br /></p>
+
+<p>The theory of operation is pretty simple. Sounds sound the way they do because they have unique sets of frequencies they contain, all at different prominence levels. Human speech, and in particular certain letters combinations or inflections within a language have universal characteristics no matter the speaker. “s” sounds have higher frequencies to get that crackle. In English, ends of questions might have higher frequencies as you go up in pitch.</p>
+
+<p><br /></p>
+
+<p>The idea is to a “shape” or “impart” these spectral features from speech onto our carrier. If you’re tight with Fourier, you might look into a FFT of both your speech and carrier, then scaling each bucket of the carrier FFT by the magnitude of corresponding speech FFT bucket. Since I wanted to hand-write all my hardware, I decided to do a more lo-fi version:</p>
+
+<p><br />
+<img src="/assets/voxos/plan.jpg" alt="the plan" />
+<em>The overall plan. Drawing is my passion</em>
+<br /></p>
+
+<p>In the end I had a few design requirements:</p>
+
+<ol>
+  <li>Sound like I’m singing any note on the standard 88 piano keys (since I’m going to be controlling this with a keyboard, anything higher or lower would be unpleasant anyways)</li>
+  <li>Have decent audio quality, so nothing 8-bit. On par with the OG analog <a href="https://en.wikipedia.org/wiki/Roland_VP-330">Roland VP330</a> was the benchmark</li>
+  <li>Controllable over MIDI so I could choose my favorite DAW/controller and pitchbend/generate envelopes as I desired</li>
+</ol>
+
+<p>And an FPGA shines here because we have a large parallel problem (lots of filters in our filterbank) that can be pipelined at a relatively high frequency.</p>
+
+<h2 id="making-sound">Making Sound</h2>
+
+<p>Like any self-respecting synthesizer, I wanted to be able to generate <strong>sine, sawtooth, triangle, and square</strong> waves, up to at least 5kHz to meet requirement (1). Further, to reach <a href="#fn:cent" class="footnote">cent-resolution</a><sup id="fnref:cent" role="doc-noteref"><a href="#fn:cent" class="footnote">2</a></sup> in the worst case (at 20Hz) for requirement (2), we need at least 21-bits to represent our audio. I rounded this up to 24-bit for a round 3 bytes.</p>
+
+<p><br /></p>
+
+<p>The triangle, square, and saw are easy to generate on the FPGA. For the sine wave, instead of doing anything floating-point or CORDIC on the FPGA, I opted to do Direct Digital Synthesis (DDS). All this means is storing a huge table of precomputed sine values scaled by <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>23</mn></msup><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">2^{23}-1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span><span class="mord mtight">3</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span> and using those depending on the current phase we’re at. Exploiting symmetry, I only needed to save a quarter-period of these values. I wrote a <a href="https://github.com/Li357/voxos/blob/main/scripts/wavegen.py">Python script</a> to do that and save it to a file Verilog could use to fill up BRAM on the FPGA.</p>
+
+<h2 id="designing-pipelined-filters">Designing Pipelined Filters</h2>
+
+<p>Next, I went about designing my filterbank for our cheapo-pseudo-FFT. For digital filtering, we can choose an <a href="#fn:filter" class="footnote">IIR or FIR</a><sup id="fnref:filter" role="doc-noteref"><a href="#fn:filter" class="footnote">3</a></sup> filter with benefits and tradeoffs. I went with an IIR for its (a) easier implementation, (b) flatter response outside of band of interest, and (c) lower latency. The tradeoff is worse filter stability and nonlinear phase: these are important for some audiophiles, but I figured implementation ease won out.</p>
+
+<p><br />
+A basic digital IIR filter is the <a href="https://en.wikipedia.org/wiki/Digital_biquad_filter">biquad</a> which can be parametrized to be a bandpass I needed, and can be easily implemented via the difference equation, where <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo stretchy="false">[</mo><mi>n</mi><mo stretchy="false">]</mo></mrow><annotation encoding="application/x-tex">y[n]</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.03588em;">y</span><span class="mopen">[</span><span class="mord mathdefault">n</span><span class="mclose">]</span></span></span></span> is our output and <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo stretchy="false">[</mo><mi>n</mi><mo>−</mo><mi>i</mi><mo stretchy="false">]</mo></mrow><annotation encoding="application/x-tex">x[n-i]</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault">x</span><span class="mopen">[</span><span class="mord mathdefault">n</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault">i</span><span class="mclose">]</span></span></span></span> are current and previous samples.</p>
+
+<p><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo stretchy="false">[</mo><mi>n</mi><mo stretchy="false">]</mo><mo>=</mo><msub><mi>b</mi><mn>0</mn></msub><mi>x</mi><mo stretchy="false">[</mo><mi>n</mi><mo stretchy="false">]</mo><mo>+</mo><msub><mi>b</mi><mn>1</mn></msub><mi>x</mi><mo stretchy="false">[</mo><mi>n</mi><mo>−</mo><mn>1</mn><mo stretchy="false">]</mo><mo>+</mo><msub><mi>b</mi><mn>2</mn></msub><mi>x</mi><mo stretchy="false">[</mo><mi>n</mi><mo>−</mo><mn>2</mn><mo stretchy="false">]</mo><mo>−</mo><msub><mi>a</mi><mn>1</mn></msub><mi>y</mi><mo stretchy="false">[</mo><mi>n</mi><mo>−</mo><mn>1</mn><mo stretchy="false">]</mo><mo>−</mo><msub><mi>a</mi><mn>2</mn></msub><mi>y</mi><mo stretchy="false">[</mo><mi>n</mi><mo>−</mo><mn>2</mn><mo stretchy="false">]</mo></mrow><annotation encoding="application/x-tex">
+y[n] = b_0x[n] + b_1x[n-1] + b_2x[n-2] - a_1y[n - 1] - a_2y[n-2]
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.03588em;">y</span><span class="mopen">[</span><span class="mord mathdefault">n</span><span class="mclose">]</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathdefault">b</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">0</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord mathdefault">x</span><span class="mopen">[</span><span class="mord mathdefault">n</span><span class="mclose">]</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathdefault">b</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord mathdefault">x</span><span class="mopen">[</span><span class="mord mathdefault">n</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">1</span><span class="mclose">]</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathdefault">b</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord mathdefault">x</span><span class="mopen">[</span><span class="mord mathdefault">n</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">2</span><span class="mclose">]</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathdefault">a</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord mathdefault" style="margin-right:0.03588em;">y</span><span class="mopen">[</span><span class="mord mathdefault">n</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">1</span><span class="mclose">]</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathdefault">a</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord mathdefault" style="margin-right:0.03588em;">y</span><span class="mopen">[</span><span class="mord mathdefault">n</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">2</span><span class="mclose">]</span></span></span></span></span></p>
+
+<p>Next, I chose to make these bandpasses <em>maximally flat</em> to faithfully reproduce speech characteristics. Via the <a href="https://en.wikipedia.org/wiki/Z-transform"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>z</mi></mrow><annotation encoding="application/x-tex">z</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.04398em;">z</span></span></span></span>-transform</a>, we can generate cofficients <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>a</mi><mi>i</mi></msub><mo separator="true">,</mo><msub><mi>b</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">a_i, b_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathdefault">a</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault">b</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> for <a href="https://en.wikipedia.org/wiki/Butterworth_filter">Butterworth IIR filters</a> that have this response. Learning MATLAB came in handy here, and I could easily generate the coefficients <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>a</mi><mi>i</mi></msub><mo separator="true">,</mo><msub><mi>b</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">a_i, b_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathdefault">a</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault">b</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> for however many frequency bands I wanted for my filterbank, logarithmically spaced between 50Hz and 7kHz (normal human speech range). Above 7kHz, I had a highpass handle the rest.</p>
+
+<p><br />
+<img src="/assets/voxos/fb.png" alt="filter bank in MATLAB" />
+<em>16 Butterworth IIR biquads from 50Hz-7kHz logarithmically spaced. These are also 4th order (2 cascaded biquads) for better rolloff.</em>
+<br /></p>
+
+<p>These were saved in a BRAM with fixed-point arithmetic (no hardware floats!). Next, I wanted to as many filters in my filterbank as possible to have a higher output quality (more buckets = more speech features captured). But the FPGA has only so many resources, so to push it to its limits, I timeshared every 4th order biquad: <strong>speech and synth audio were filtered serially, then the same filter hardware was reconfigured as a lowpass filter for envelope detection.</strong> But each of these involved 20-bit with 24-bit multiplications and headroom, so I had to <strong>pipeline each operation of the biquad</strong> to meet timing. This further put constraints given the clock and sample rate, and gave me a theoretical maximum of 29 filters. I ended up implementing 28.</p>
+
+<h2 id="talking-to-the-world">Talking to the World</h2>
+
+<p>For my microphone and audio interface, I wrote UART/I2S drivers that I testbenched and also verified with a logic analyzer. I used the <a href="https://digilent.com/reference/pmod/pmodi2s2/start">Pmod I2S2 peripheral</a> which came with the name addition of an audio IN. I could change any song to any key!</p>
+
+<p><br /></p>
+<iframe src="https://youtube.com/embed/FAIMAK-sLGw?start=223&amp;end=252" height="400" frameborder="0"></iframe>
+<p><br /></p>
+
+<h2 id="battling-usb-and-losing">Battling USB (and Losing)</h2>
+
+<p>To accomplish (3), I actually spent the first few weeks of the project trying to get the <a href="https://www.analog.com/en/products/max3421e.html#part-details">MAX3241E</a> chip on the FPGA over SPI to act as a USB host. Then, I could plug in any MIDI keyboard directly into the FPGA and truly play it on-the-go. In fact, I spent a week or so reading up on <a href="https://beyondlogic.org/usbnutshell/usb1.shtml">this excellent wiki, USB in a Nutshell</a> and implementing the entire process in <a href="https://github.com/Li357/voxos/blob/main/hdl/usb_controller.sv">a driver</a>:</p>
+
+<p><br />
+<img src="/assets/voxos/pain.png" alt="the pain of USB in commits" /> 
+<br /></p>
+
+<p>I got the chip to detect a peripheral, negotiate USB 1.1, send 5V to the keyboard, setup endpoints and configurations, but it crapped out <strong>as soon as I asked for a data packet.</strong> It’d keep spinning in this un-further-documented 0x0E “timeout” state. Englightening. Joe Steinmeyer, who runs the class, even brought out this <a href="https://www.keysight.com/us/en/product/MSOS054A/high-definition-oscilloscope-500mhz-4-analog-16-digital-channels.html">monster $40k scope</a> which could decode USB packets. Unfortunately, that feature is a subscription :sob:</p>
+
+<p><br />
+<img src="/assets/voxos/windows.jpg" alt="the oscillscope runs windows?" />
+<em>It runs Windows???</em>
+<br /></p>
+
+<p>I ended up writing a small Python script that would transparent forward MIDI packets from keyboard to computer to the FTDI chip on the FPGA over UART. I guess I know that datasheet by heart now. Here’s a demo of the synth and MIDI features:</p>
+
+<p><br /></p>
+<iframe src="https://youtube.com/embed/FAIMAK-sLGw?start=146&amp;end=220" height="400" frameborder="0"></iframe>
+<p><br /></p>
+
+<h2 id="how-does-it-sound">How does it sound?</h2>
+
+<p><br /></p>
+<iframe src="https://youtube.com/embed/FAIMAK-sLGw?start=254" height="400" frameborder="0"></iframe>
+<p><br /></p>
+
+<p>So, while you definitely sound like a robot, there’s still some left to be desired. Some small off-by-one timing issues crept up, and clipping was an issue I couldn’t fully solve. On other fronts though, the project was a great success: I learned a lot about DSP, USB, and hardware debugging. It was really satisfying to design the DSP algorithm end-to-end, and come out with a convincing result!</p>
+
+<hr />
+
+<div class="footnotes" role="doc-endnotes">
+  <ol>
+    <li id="fn:mtpt" role="doc-endnote">
+      <p>Put your top teeth on your bottom lip and hum. Your teeth should introduce some higher harmonics. Best if you have an underbite and flip the placement. <a href="#fnref:mtpt" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:cent" role="doc-endnote">
+      <p>A cent is <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mi mathvariant="normal">/</mi><mn>100</mn></mrow><annotation encoding="application/x-tex">1/100</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">1</span><span class="mord">/</span><span class="mord">1</span><span class="mord">0</span><span class="mord">0</span></span></span></span> of a semitone, or a twelfth of an octave. This is kind of an arbitrary definition for “hi-fi” audio, but a good bar for what I can distinguish with my ears <a href="#fnref:cent" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:filter" role="doc-endnote">
+      <p>Infinite impulse or finite impulse response. <a href="#fnref:filter" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+
+
+<div id="footnote-toast"></div>
+<script>
+  let currTimeout;
+  const timeout = 2000;
+  const toast = document.getElementById('footnote-toast');
+  const footnoteLinks = document.querySelectorAll('.footnote');
+
+  footnoteLinks.forEach((footnoteLink) => {
+    footnoteLink.addEventListener('mouseenter', () => {
+      const href = footnoteLink.getAttribute('href');
+      const footnoteContent = document.getElementById(href.slice(1)).querySelector('p');
+      const clonedContent = footnoteContent.cloneNode(true);
+      clonedContent.removeChild(clonedContent.querySelector('a.reversefootnote'));
+
+      toast.innerHTML = clonedContent.innerHTML;
+      clearTimeout(currTimeout);
+      toast.classList.add('active');
+    });
+
+    footnoteLink.addEventListener('mouseleave', () => {
+      currTimeout = setTimeout(() => {
+        toast.classList.remove('active');
+      }, timeout);
+    });
+  });
+
+  toast.addEventListener('mouseenter', () => {
+    clearTimeout(currTimeout);
+  });
+
+  toast.addEventListener('mouseleave', () => {
+    currTimeout = setTimeout(() => {
+      toast.classList.remove('active');
+    }, timeout);
+  });
+</script>
+</main>
+      <footer></footer>
+    </div>
+    <script>
+      const toggler = document.createElement('span');
+      toggler.classList.add('theme-toggler');
+      const indicator = document.createElement('span');
+      indicator.classList.add('indicator');
+      toggler.append(indicator);
+      const links = document.querySelector('.nav__links');
+      links.prepend(toggler);
+
+      const currTheme = localStorage.getItem('theme');
+
+      function setTheme(theme) {
+        document.documentElement.dataset.theme = theme;
+        indicator.innerText = theme === 'dark' ? 'D' : 'L';
+      }
+
+      if (currTheme) {
+        setTheme(currTheme);
+      } else {
+        const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
+        setTheme(systemDark.matches ? 'dark' : 'light');
+      }
+
+      toggler.addEventListener('click', () => {
+        const newTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+        setTheme(newTheme);
+        localStorage.setItem('theme', newTheme);
+      });
+    </script>
+  </body>
+</html>

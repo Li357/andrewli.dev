@@ -1,0 +1,33 @@
+.profile { display: flex; align-items: center; margin: 50px 0; gap: 20px; }
+.profile img { width: 100%; border-radius: 50%; }
+.profile h2 { margin: 0; }
+.profile .socials { margin: 10px 0; height: 25px; }
+.profile .socials a { margin-right: 10px; }
+.profile .socials a:last-child { margin-right: 0; }
+.profile .socials a svg { height: 100%; }
+.profile .socials a svg > path { fill: var(--color-foreground); }
+
+.courses { overflow: auto; display: flex; flex: 1; gap: 10px; -ms-overflow-style: none; scrollbar-width: none; }
+.courses .course { display: flex; flex-direction: column; min-width: 220px; border: 2px solid var(--color-inactive); border-radius: var(--border-radius); padding: 10px; }
+.courses .course h5, .courses .course h6 { margin: 0; }
+.courses .course h6 { color: var(--color-inactive); }
+.courses .course p { font-size: 0.8rem; }
+
+.project { padding: 10px 0; display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+.project img { max-height: 150px; width: auto; }
+.project h3 { margin: 5px 0; }
+.project h3 a { font-weight: bold; color: var(--color-foreground); transition: var(--transition-ease); }
+.project h3 a:hover { color: var(--color-active); }
+.project .subtitle { display: flex; align-items: center; }
+.project .subtitle .tag { border-radius: 50px; /* something big */ color: var(--color-background); padding: 0 7.5px; font-size: 0.75rem; margin: 2.5px; }
+.project .subtitle .tag:first-child { margin-left: 10px; }
+.project .subtitle .tag.math { background-color: var(--color-tag-math); }
+.project .subtitle .tag.eecs { background-color: var(--color-tag-eecs); }
+.project .subtitle .tag.misc { background-color: var(--color-tag-misc); }
+.project .subtitle .tag.bk { background-color: var(--color-tag-bk); }
+
+@media (max-width: 475px) { .profile { flex-direction: column; }
+  .profile img { width: 50%; }
+  .profile .bio { text-align: center; }
+  .project { flex-direction: column; margin: 10px 0; align-items: initial; }
+  .project img { align-self: center; width: 50%; max-height: 100%; } }
