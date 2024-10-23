@@ -1,0 +1,10 @@
+.content img { margin: 0 auto; margin-bottom: 10px; width: auto; height: auto; max-width: 100%; max-height: 400px; display: block; }
+.content img + em { display: block; text-align: center; }
+.content .header { margin-bottom: calc(2 * var(--margin-vertical)); }
+.content .header h1 { margin: 0; }
+.content .qed { margin: 0 auto; }
+.content #footnote-toast { position: fixed; padding: calc(2 * var(--margin-vertical)); opacity: 0; bottom: 0; right: 100px; width: 350px; border: 2px solid var(--color-inactive); border-radius: var(--border-radius); transition: var(--transition-ease-fast); background-color: var(--color-background); }
+.content #footnote-toast.active { opacity: 100%; bottom: 50px; }
+@media (max-width: 800px) { .content #footnote-toast { display: none; } }
+
+.katex-display > .katex { white-space: unset; }

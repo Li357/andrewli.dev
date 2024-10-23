@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>The Ætheric: making music from EMI | Andrew Li</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="The Ætheric: making music from EMI" />
+<meta name="author" content="Andrew Li" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="A pair of gloves that “play” electromagnetic interference by hovering over everyday objects" />
+<meta property="og:description" content="A pair of gloves that “play” electromagnetic interference by hovering over everyday objects" />
+<link rel="canonical" href="https://andrewli.dev/blog/aetheric" />
+<meta property="og:url" content="https://andrewli.dev/blog/aetheric" />
+<meta property="og:site_name" content="Andrew Li" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-05-05T00:00:00-05:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="The Ætheric: making music from EMI" />
+<script type="application/ld+json">
+{"author":{"@type":"Person","name":"Andrew Li"},"description":"A pair of gloves that “play” electromagnetic interference by hovering over everyday objects","url":"https://andrewli.dev/blog/aetheric","@type":"BlogPosting","headline":"The Ætheric: making music from EMI","dateModified":"2023-05-05T00:00:00-05:00","datePublished":"2023-05-05T00:00:00-05:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://andrewli.dev/blog/aetheric"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://use.typekit.net/qqf1aiq.css">
+    <link rel="icon" href="/assets/images/favicon.ico" />
+    <link rel="stylesheet" href="/css/default.css" />
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BPPP33YGCV"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-BPPP33YGCV');
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <nav class="nav">
+        <a href="/" class="nav__home"><svg  xmlns="http://www.w3.org/2000/svg" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 128 128" style="enable-background:new 0 0 128 128;" space="preserve">
+  <path d="M0,0v128h128V0H0z M91.5,90.9c-3.7-0.1-8.3-0.2-13.8-0.2c-5.8,0-10,0.1-12.8,0.2v-1.5c1.4,0,2.8-0.2,4.1-0.7 c0.8-0.4,1.3-1.2,1.3-2.1c-0.1-1.3-0.4-2.5-0.9-3.6L56.2,50.7l-7.3,20.7c-1.6,4.7-2.5,8.5-2.5,11.3c0,4.4,2.1,6.6,6.2,6.8v1.5 c-3.8-0.2-7.1-0.2-9.9-0.2c-2.4,0-4.4,0.1-5.9,0.2v-1.5c1.6-0.9,3-2.1,4-3.6c1.6-2.2,2.8-4.5,3.6-7.1l14.8-41.6c1.6,0.1,3,0.2,4,0.2 s2.3-0.1,3.9-0.2L87,84.5c0.5,1.3,1.2,2.6,2.2,3.6c0.6,0.7,1.4,1.1,2.3,1.2V90.9z"/>
+</svg></a>
+        <div class="nav__links">
+        </div>
+      </nav>
+      <main class="content">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
+
+
+
+
+<link rel="stylesheet" href="/css/post.css" />
+<div class="header">
+  <h1>The Ætheric: making music from EMI</h1>
+  <span class="subtitle">May 2023</span>
+</div>
+<p><strong>TLDR:</strong> I made a pair of gloves that pickup the close-range electromagnetic interference around an object, and modify its pitch and panning for an aethereal auditory experience. I used an analog inductive coupling frontend, bend-sensitive material, two ESP32s with a Python receiver to communicate with Ableton Live.</p>
+
+<h2 id="perceiving-the-inperceptible">Perceiving the Inperceptible</h2>
+
+<p>I’ve been interested in <a href="https://en.wikipedia.org/wiki/Sonification">sonification</a> for a while. It’s where you convey non-auditory (or non-speech) data in an auditory way. One prime candidate for sonification right up my alley is electromagnetic waves, in particular the sheer amount of electromagnetic waves that we’re drenched in on a daily basis from our power outlets, Wifi routers, Bluetooth earbuds, etc.</p>
+
+<p><br />
+Even though these devices operate in different frequency bands way above our hearing range (except power lines at 60Hz), they still interfere with each other, producing waves that end up living in our audible range (we’re talking at most -50dBm or 8 orders of magnitude smaller than your phone charger’s power). Note though that these waves contain electromagnetic energy, not sound energy–they need a mechanism to turn them into actual air molecules vibrating.</p>
+
+<p><br />
+As I was finishing up 21M.370 Digital Instrument Design, I wanted to make an instrument that could sonify these interferences, a sort of lute for the <a href="https://en.wikipedia.org/wiki/Aether_(classical_element)">“aether,” or invisible medium scientists used to think light traveled through</a>. I also wanted to give a certain aesthetic:</p>
+<ul>
+  <li>Whatever antenna or pickup for these waves should ideally be mobile I can move around and sample different objects in realtime</li>
+  <li>I should be able to manipulate the sound I’m getting from the pickup in an easy interface</li>
+  <li>All the electronics should be visible</li>
+</ul>
+
+<h2 id="the-antenna">The Antenna</h2>
+
+<p>Ian Hattwick, who teaches the class, pointed me to a few existing products with similar ideas. For example, SOMA’s <a href="https://somasynths.com/ether_demo/">Ether V2</a> is a wideband receiver that AM-demodulates everything it receives. The <a href="https://store.lom.audio/products/elektrosluch-3?variant=4542168268832">Elektroslutch 3+</a> uses inductors to couple with nearby EMI, and jacks it up to audible range with a beefy op-amp. I chose the focus on the latter because with <a href="#fn:rant" class="footnote">my limited circuit knowledge at the time</a><sup id="fnref:rant" role="doc-noteref"><a href="#fn:rant" class="footnote">1</a></sup>, it being open-source was incredibly helpful.</p>
+
+<p><img src="/assets/aetheric/circuit.jpg" alt="elektrosluch EMI sensor circuit" />
+<em>Elektrosluch’s EMI sensor circuit simplified</em>
+<br /></p>
+
+<p>Even though I didn’t know a lot about circuit design, I tried to understand what each part did and spec parts according to what I could get. I wanted:</p>
+<ol>
+  <li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>L</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex">L_1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault">L</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> large so I could get a larger induced voltage. 10 mH actually turned out to be the biggest I could get on Amazon at a good size and price</li>
+  <li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex">R_1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.00773em;">R</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.00773em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> small to minimize attenuation. I had a few 100 Ohms lying around that could do the trick.</li>
+  <li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>C</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">C_2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.07153em;">C</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.07153em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> large to AC couple and minimize harmonic distortion (I want just the EMI, not op amp noise!) The lab had beefy 100uF so I went with those.</li>
+</ol>
+
+<p>Finally <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">R_2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.00773em;">R</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.00773em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> and <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>C</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex">C_1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.07153em;">C</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.07153em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> were chosen for high gain &gt;50dB up to 20kHz. I wasn’t exactly sure how much gain I’d need, but I guessed this number was high enough to start. Next, Elektrosluch’s schematic uses an <a href="https://www.ti.com/product/OPA1612#order-quality">OPA1612</a>, which doesn’t come in 8-DIP through-hole form. So I opted for the <a href="https://www.ti.com/product/LM4562">LM4562N</a>, a slightly cheaper through-hole option with support for ±2.5V rails from my 5V USB supply.</p>
+
+<p><br />
+<img src="/assets/aetheric/antenna.png" alt="circuit test" />
+<em>Circuit tested with analog audio out going directly to an audio interface into Ableton, then quickly put onto a piece of packing tape for a test fit</em>
+<br /></p>
+<video height="500px" center="" controls="">
+  <source src="/assets/aetheric/demo.mp4" type="video/mp4" />
+</video>
+<p><br />
+<em>Samples from a switching regulator in the power brick, an iPad that starts using Wifi, and earbuds that start Bluetooth advertising. You can even hear Lorde’s Royals from the radio</em>
+<br /></p>
+
+<h2 id="making-sensors">Making Sensors</h2>
+
+<p>Besides just picking up raw audio, I wanted a way to change the way it sounded via hand gestures with an ESP32 at my disposal. This played into the “EMI wizard harnessing the latent sound of objects” vibe. I played around with the idea of having a solid piece similar to an ergonomic mouse that would house the antenna circuitry with buttons for my fingers to play different notes, but opted for something I thought was easier to fabricate: a pair of gloves with bend sensors on each finger to modify <strong>pitch</strong> continuously.</p>
+
+<p><br />
+<img src="/assets/aetheric/velostat.png" alt="fabrication of my bend sensors" />
+<em>Making cheap bend sensors with Velostat, copper tape on both sides, and a Cricut sealer</em>
+<br /></p>
+
+<p>Since we didn’t have any actual bend sensors lying around, I opted to make some with <a href="https://en.wikipedia.org/wiki/Velostat">Velostat</a>, a material whose resistance changes with pressure. By putting copper tape on each side (stuck onto the plastic, not Velostat), then soldering on jumpers, I hoped I could use the ESP’s ADC to track bendiness.</p>
+
+<p><br />
+<img src="/assets/aetheric/fullthing.jpg" alt="full glove with bend sensors attached" />
+<em>Bend sensors attached to each finger with some 3D-printed joint guides I glued to some black gloves from Amazon</em>
+<br /></p>
+
+<p>After fiddling with some smoothing filters, I managed to be able to track <em>open palm</em> and <em>curled fist</em> pretty well. The main problem was the sensors were not reliable over sessions, so they didn’t really have a “range.” So I wrote this calibration routine that would expect an open and close gesture at the start of each session to reach mins and max ADC values. These extrema would continuously tighten or relax if the current values were outside of <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>25</mn><mi mathvariant="normal">%</mi></mrow><annotation encoding="application/x-tex">25\%</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.80556em;vertical-align:-0.05556em;"></span><span class="mord">2</span><span class="mord">5</span><span class="mord">%</span></span></span></span> to <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>75</mn><mi mathvariant="normal">%</mi></mrow><annotation encoding="application/x-tex">75\%</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.80556em;vertical-align:-0.05556em;"></span><span class="mord">7</span><span class="mord">5</span><span class="mord">%</span></span></span></span> the current extrema.</p>
+
+<p><br /></p>
+
+<p>For further gestural flexibility, I also opted for an IMU for the roll on one hand to change <a href="https://en.wikipedia.org/wiki/Panning_(audio)"><strong>audio panning.</strong></a> The audio setup in the classroom had two large subwoofers, so I wanted to take advantage of that locality of sound to further emphasize waves traveling in the aether. This also required some averaging filters.</p>
+
+<h2 id="putting-it-all-together">Putting It All Together</h2>
+
+<p>The dream was to go completely wireless, giving myself the freedom to move around and really explore sounds. In reality, audio transmission was the main bottleneck. For ease of implementation, I settled on the following:</p>
+
+<p><br />
+<img src="/assets/aetheric/system.jpg" alt="full system" />
+<em>Full system to minimize number of wires: only two super long 1/8” stereo cables from each glove</em>
+<br /></p>
+
+<p>I was able to connect the ESPs to MIT’s WPA2-Enterprise with PEAP Wifi after some fanfare, and UDP packets were streaming in. The next thing to do was control Ableton via Python, which <a href="https://github.com/ideoforms/AbletonOSC/tree/master">AbletonOSC</a> was able to do. By setting up a local OSC client to talk to Ableton and setting up my pitch-shift and panning effects on separate tracks, I could use the system end-to-end! 
+<br /></p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>I unfortunately can’t find videos of the live performance I gave for 21M.370, but I dressed in all-black with sunglasses, brought in mice, keyboards, power cords, routers, and headphones as objects to “sample.” I started with more ambient sources (such as power bricks, 60Hz outlets) to play around with pitch and panning then moved to triggering larger squeals on devices by using Wifi and Bluetooth. A few portable batteries came unplugged, but the show must go on!</p>
+
+<p><br /></p>
+
+<p>I certainly feel the project is in dire need of better physical construction, so I see a new iteration in the future. Besides that, I enjoyed making something that wasn’t just on the computer for the first time–there were a lot of nuances both in aesthetic choice and actual technical execution. In the meantime, I’m interested in how I can larger things–like my saxophone–into an antenna. Stay <em>tuned</em>!</p>
+
+<hr />
+
+<div class="footnotes" role="doc-endnotes">
+  <ol>
+    <li id="fn:rant" role="doc-endnote">
+      <p>MIT just got rid of its pure EE major. It’s pretty ridiculous I could’ve graduated without learning about a BJT <a href="#fnref:rant" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+
+
+<div id="footnote-toast"></div>
+<script>
+  let currTimeout;
+  const timeout = 2000;
+  const toast = document.getElementById('footnote-toast');
+  const footnoteLinks = document.querySelectorAll('.footnote');
+
+  footnoteLinks.forEach((footnoteLink) => {
+    footnoteLink.addEventListener('mouseenter', () => {
+      const href = footnoteLink.getAttribute('href');
+      const footnoteContent = document.getElementById(href.slice(1)).querySelector('p');
+      const clonedContent = footnoteContent.cloneNode(true);
+      clonedContent.removeChild(clonedContent.querySelector('a.reversefootnote'));
+
+      toast.innerHTML = clonedContent.innerHTML;
+      clearTimeout(currTimeout);
+      toast.classList.add('active');
+    });
+
+    footnoteLink.addEventListener('mouseleave', () => {
+      currTimeout = setTimeout(() => {
+        toast.classList.remove('active');
+      }, timeout);
+    });
+  });
+
+  toast.addEventListener('mouseenter', () => {
+    clearTimeout(currTimeout);
+  });
+
+  toast.addEventListener('mouseleave', () => {
+    currTimeout = setTimeout(() => {
+      toast.classList.remove('active');
+    }, timeout);
+  });
+</script>
+</main>
+      <footer></footer>
+    </div>
+    <script>
+      const toggler = document.createElement('span');
+      toggler.classList.add('theme-toggler');
+      const indicator = document.createElement('span');
+      indicator.classList.add('indicator');
+      toggler.append(indicator);
+      const links = document.querySelector('.nav__links');
+      links.prepend(toggler);
+
+      const currTheme = localStorage.getItem('theme');
+
+      function setTheme(theme) {
+        document.documentElement.dataset.theme = theme;
+        indicator.innerText = theme === 'dark' ? 'D' : 'L';
+      }
+
+      if (currTheme) {
+        setTheme(currTheme);
+      } else {
+        const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
+        setTheme(systemDark.matches ? 'dark' : 'light');
+      }
+
+      toggler.addEventListener('click', () => {
+        const newTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+        setTheme(newTheme);
+        localStorage.setItem('theme', newTheme);
+      });
+    </script>
+  </body>
+</html>
